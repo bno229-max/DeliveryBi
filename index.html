@@ -5,27 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BI Delivery | SaaS Financeiro</title>
     
-    <!-- Bibliotecas de UI e Exportação -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- SDKs do Firebase (Versão Compatível) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
-            /* Cores dos Canais */
             --ifood: #ef4444;      
             --keeta: #10b981;      
             --99foods: #f59e0b;    
             --outras: #64748b;     
             
-            /* Tema Light */
             --bg-color: #f8fafc;
             --panel-bg: #ffffff;
             --panel-border: #e2e8f0;
@@ -172,10 +168,7 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
-<body class="dark-mode"> <!-- Inicia no modo escuro por padrão -->
-
-    <!-- TELA DE LOGIN -->
-    <div id="login-wrapper">
+<body class="dark-mode"> <div id="login-wrapper">
         <div class="login-box card">
             <h1><i class="fas fa-chart-pie"></i> BI Delivery</h1>
             <p>Acesse o seu SaaS Financeiro na nuvem</p>
@@ -201,7 +194,6 @@
         </div>
     </div>
 
-    <!-- NAVEGAÇÃO LATERAL (ESCONDIDA ATÉ O LOGIN) -->
     <div class="sidebar" id="sidebar" style="display: none;">
         <div class="sidebar-logo">
             <i class="fas fa-chart-pie"></i>
@@ -214,7 +206,6 @@
         <div class="nav-item" onclick="switchTab('produtos', this)"><i class="fas fa-box-open"></i><span>Base de Produtos</span></div>
     </div>
 
-    <!-- CONTAINER PRINCIPAL (DASHBOARD) -->
     <div class="main-wrapper" id="mainWrapper">
         <div class="top-navbar">
             <div class="navbar-left">
@@ -236,7 +227,7 @@
         </div>
 
         <div class="content-container" id="pdfContent">
-            <!-- ABA 1: DASHBOARD -->
+            
             <div id="view-dashboard" class="view-section active">
                 <div class="controls-wrapper" data-html2canvas-ignore="true">
                     <div class="control-panel">
@@ -283,7 +274,6 @@
                 </div>
             </div>
 
-            <!-- ABA 2: VENDAS -->
             <div id="view-vendas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-motorcycle text-accent"></i> Registrar Nova Venda</h2>
@@ -324,7 +314,6 @@
                 </div>
             </div>
 
-            <!-- ABA 3: DESPESAS -->
             <div id="view-despesas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-file-invoice-dollar text-accent"></i> Registrar Despesa</h2>
@@ -353,7 +342,6 @@
                 </div>
             </div>
 
-            <!-- ABA 4: RECEITAS AVULSAS -->
             <div id="view-receitas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-hand-holding-usd text-accent"></i> Registrar Receita Avulsa</h2>
@@ -374,7 +362,6 @@
                 </div>
             </div>
 
-            <!-- ABA 5: PRODUTOS E ESTOQUE -->
             <div id="view-produtos" class="view-section">
                 <div class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-box-open text-accent"></i> Base de Produtos e Estoque</h2>
@@ -391,7 +378,6 @@
         </div> 
     </div>
 
-    <!-- MODAL DE PERFIL -->
     <div id="modalPerfil" class="modal-overlay">
         <div class="modal-content card">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-user-cog text-accent"></i> Configurações da Conta</h3>
@@ -443,7 +429,6 @@
 
         const coresCanais = { 'iFood': '#ef4444', 'Keeta': '#10b981', '99 Foods': '#f59e0b', 'Outras Receitas': '#64748b' };
         
-        // Define datas padrão nos inputs
         document.getElementById('dataVenda').valueAsDate = new Date();
         document.getElementById('dataDespesa').valueAsDate = new Date();
         document.getElementById('dataReceitaAvulsa').valueAsDate = new Date();
@@ -458,7 +443,7 @@
                 document.getElementById('sidebar').style.display = 'flex';
                 document.getElementById('mainWrapper').style.display = 'flex';
                 applyTheme();
-                carregarDadosDaNuvem(); // Puxa dados do banco
+                carregarDadosDaNuvem();
             } else {
                 currentUser = null;
                 document.getElementById('login-wrapper').style.display = 'flex';
@@ -495,25 +480,21 @@
         function carregarDadosDaNuvem() {
             const uid = currentUser.uid;
 
-            // Escuta Vendas
             db.collection('vendas').where('userId', '==', uid).onSnapshot(snap => {
                 bdVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 atualizarDashboard();
             });
 
-            // Escuta Despesas
             db.collection('despesas').where('userId', '==', uid).onSnapshot(snap => {
                 bdDespesas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 atualizarDashboard();
             });
 
-            // Escuta Receitas Avulsas
             db.collection('receitas').where('userId', '==', uid).onSnapshot(snap => {
                 bdReceitasAvulsas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 atualizarDashboard();
             });
 
-            // Escuta Produtos (Estoque)
             db.collection('produtos').where('userId', '==', uid).onSnapshot(snap => {
                 bdProdutos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarBaseProdutos();
@@ -521,7 +502,6 @@
                 atualizarDashboard();
             });
 
-            // Escuta Perfil White Label
             db.collection('usuarios').doc(uid).onSnapshot(doc => {
                 if (doc.exists) {
                     perfilDados = doc.data();
@@ -531,7 +511,7 @@
         }
 
         // ==============================================================
-        // 5. MÓDULO DE PERFIL (WHITE LABEL) NA NUVEM
+        // 5. MÓDULO DE PERFIL
         // ==============================================================
         function renderizarPerfilUI() {
             document.getElementById('nomeUsuario').innerText = perfilDados.nome;
@@ -574,7 +554,7 @@
         });
 
         // ==============================================================
-        // 6. MÓDULO DE PRODUTOS & ESTOQUE (NUVEM)
+        // 6. PRODUTOS & ESTOQUE
         // ==============================================================
         function cadastrarProdutoBase() {
             const nome = document.getElementById('novoProdutoNome').value.trim();
@@ -636,7 +616,7 @@
         }
 
         // ==============================================================
-        // 7. MÓDULO DE VENDAS (NUVEM)
+        // 7. VENDAS
         // ==============================================================
         document.getElementById('formVendas').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -699,16 +679,15 @@
         }
 
         // ==============================================================
-        // 8. MÓDULO DE DESPESAS (NUVEM)
+        // 8. DESPESAS E RECEITAS AVULSAS
         // ==============================================================
         document.getElementById('formDespesas').addEventListener('submit', function(e) {
             e.preventDefault();
-            const desp = {
+            db.collection('despesas').add({
                 data: document.getElementById('dataDespesa').value, categoria: document.getElementById('categoriaDespesa').value,
                 valor: parseFloat(document.getElementById('valorDespesa').value), descricao: document.getElementById('descDespesa').value,
                 userId: currentUser.uid
-            };
-            db.collection('despesas').add(desp);
+            });
             document.getElementById('formDespesas').reset(); document.getElementById('dataDespesa').valueAsDate = new Date();
         });
 
@@ -723,9 +702,6 @@
             });
         }
 
-        // ==============================================================
-        // 9. MÓDULO DE RECEITAS AVULSAS (NUVEM)
-        // ==============================================================
         document.getElementById('formReceitasAvulsas').addEventListener('submit', function(e) {
             e.preventDefault();
             const rec = {
@@ -756,8 +732,18 @@
         }
 
         // ==============================================================
-        // 10. RECURSOS GERAIS (TEMA, NAVEGAÇÃO, DASHBOARD)
+        // 9. NAVEGAÇÃO E DASHBOARD
         // ==============================================================
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + tabId).classList.add('active');
+            element.classList.add('active');
+            const titulos = { 'dashboard': 'Visão Geral (Dashboard)', 'vendas': 'Lançamento de Vendas', 'despesas': 'Despesas Operacionais', 'receitas': 'Receitas Avulsas', 'produtos': 'Cadastro de Produtos e Estoque' };
+            document.getElementById('pageTitle').innerText = titulos[tabId];
+            if(tabId === 'dashboard') setTimeout(() => atualizarDashboard(), 50); 
+        }
+
         function limparFiltro() { document.getElementById('filterStart').value = ''; document.getElementById('filterEnd').value = ''; atualizarDashboard(); }
         function formatarMoeda(v) { return `R$ ${v.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; }
 
@@ -850,7 +836,7 @@
         }
 
         // ==============================================================
-        // 11. EXPORTAÇÃO PDF E EXCEL
+        // 12. EXPORTAÇÃO
         // ==============================================================
         function gerarExcel() {
             if (bdVendas.length === 0 && bdDespesas.length === 0 && bdReceitasAvulsas.length === 0) return alert("Não existem dados.");
@@ -873,4 +859,4 @@
         }
     </script>
 </body>
-</html>
+</html>	

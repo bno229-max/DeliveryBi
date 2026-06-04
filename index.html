@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BI Delivery | SaaS Financeiro</title>
     
+    <!-- Bibliotecas de UI e Exportação -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- SDKs do Firebase (Versão Compatível) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -168,6 +170,7 @@
 </head>
 <body class="dark-mode"> 
 
+    <!-- TELA DE LOGIN -->
     <div id="login-wrapper">
         <div class="login-box card">
             <h1><i class="fas fa-chart-pie"></i> BI Delivery</h1>
@@ -184,7 +187,13 @@
                     <label>Senha</label>
                     <input type="password" id="authPassword" placeholder="******" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px; font-size: 1rem;">
+                
+                <!-- BOTÃO ESQUECEU A SENHA -->
+                <div style="text-align: right; margin-top: -5px; margin-bottom: 15px;">
+                    <a href="#" onclick="recuperarSenha()" style="font-size: 0.8rem; color: var(--accent); text-decoration: none;">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
                     <i class="fas fa-sign-in-alt"></i> Acessar Painel
                 </button>
                 <button type="button" class="btn btn-outline" onclick="criarConta()" style="width: 100%; margin-top: 10px;">
@@ -194,6 +203,7 @@
         </div>
     </div>
 
+    <!-- NAVEGAÇÃO LATERAL -->
     <div class="sidebar" id="sidebar" style="display: none;">
         <div class="sidebar-logo">
             <i class="fas fa-chart-pie"></i>
@@ -206,6 +216,7 @@
         <div class="nav-item" onclick="switchTab('produtos', this)"><i class="fas fa-box-open"></i><span>Base de Produtos</span></div>
     </div>
 
+    <!-- CONTAINER PRINCIPAL -->
     <div class="main-wrapper" id="mainWrapper">
         <div class="top-navbar">
             <div class="navbar-left">
@@ -227,7 +238,7 @@
         </div>
 
         <div class="content-container" id="pdfContent">
-            
+            <!-- ABA 1: DASHBOARD -->
             <div id="view-dashboard" class="view-section active">
                 <div class="controls-wrapper" data-html2canvas-ignore="true">
                     <div class="control-panel">
@@ -274,6 +285,7 @@
                 </div>
             </div>
 
+            <!-- ABA 2: VENDAS -->
             <div id="view-vendas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-motorcycle text-accent"></i> Registrar Nova Venda</h2>
@@ -314,6 +326,7 @@
                 </div>
             </div>
 
+            <!-- ABA 3: DESPESAS -->
             <div id="view-despesas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-file-invoice-dollar text-accent"></i> Registrar Despesa</h2>
@@ -342,6 +355,7 @@
                 </div>
             </div>
 
+            <!-- ABA 4: RECEITAS AVULSAS -->
             <div id="view-receitas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-hand-holding-usd text-accent"></i> Registrar Receita Avulsa</h2>
@@ -362,6 +376,7 @@
                 </div>
             </div>
 
+            <!-- ABA 5: PRODUTOS E ESTOQUE -->
             <div id="view-produtos" class="view-section">
                 <div class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-box-open text-accent"></i> Base de Produtos e Estoque</h2>
@@ -378,6 +393,7 @@
         </div> 
     </div>
 
+    <!-- MODAL DE PERFIL -->
     <div id="modalPerfil" class="modal-overlay">
         <div class="modal-content card">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-user-cog text-accent"></i> Configurações da Conta</h3>
@@ -429,7 +445,7 @@
         const coresCanais = { 'iFood': '#ef4444', 'Keeta': '#10b981', '99 Foods': '#f59e0b', 'Outras Receitas': '#64748b' };
 
         // ==============================================================
-        // 3. MONITOR DE AUTENTICAÇÃO
+        // 3. MONITOR DE AUTENTICAÇÃO E RECUPERAÇÃO DE SENHA
         // ==============================================================
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -467,6 +483,27 @@
                 document.getElementById('loginError').innerText = "Erro ao criar: " + err.message;
                 document.getElementById('loginError').style.display = 'block';
             });
+        }
+
+        // Função Nova: Recuperar Senha
+        function recuperarSenha() {
+            const email = document.getElementById('authEmail').value;
+            
+            // Verifica se o usuário digitou o e-mail antes de clicar
+            if (!email) {
+                alert("Por favor, digite seu e-mail no campo acima para receber o link de recuperação.");
+                return;
+            }
+
+            // Pede ao Firebase para enviar o e-mail de recuperação
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    alert("E-mail de recuperação enviado! Verifique sua caixa de entrada (e a pasta de Spam).");
+                })
+                .catch(err => {
+                    document.getElementById('loginError').innerText = "Erro ao recuperar: " + err.message;
+                    document.getElementById('loginError').style.display = 'block';
+                });
         }
 
         function fazerLogout() { auth.signOut(); }

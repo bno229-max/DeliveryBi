@@ -12,7 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- SDKs do Firebase (Versão Compatível) -->
+    <!-- SDKs do Firebase (Versão Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -79,9 +79,11 @@
         .btn-primary:hover { background: var(--accent-hover); }
         .btn-outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
         .btn-outline:hover { background: var(--input-bg); border-color: var(--accent); }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
 
-        /* Login Screen */
-        #login-wrapper {
+        /* Login & Bloqueio Screens */
+        #login-wrapper, #block-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
             background-color: var(--bg-color); z-index: 1000;
@@ -135,6 +137,7 @@
         .controls-inputs { display: flex; gap: 8px; align-items: center; }
         .controls-inputs input { padding: 6px 8px; border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); border-radius: var(--radius-md); font-size: 0.8rem; outline: none; }
 
+        /* KPIs & Gráficos */
         .kpi-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
         .kpi-card { padding: 8px 6px; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; justify-content: center; }
         .kpi-card:hover { transform: translateY(-2px); }
@@ -161,23 +164,37 @@
         th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--panel-border); }
         th { background: var(--input-bg); color: var(--text-muted); font-weight: 500; }
         td { color: var(--text-main); }
-        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
-<body class="dark-mode"> 
+<body class="dark-mode">
+
+    <!-- TELA DE BLOQUEIO POR FALTA DE PAGAMENTO -->
+    <div id="block-wrapper" style="display: none;">
+        <div class="login-box card" style="border-top: 4px solid #ef4444;">
+            <h1 style="color: #ef4444;"><i class="fas fa-lock"></i> Acesso Suspenso</h1>
+            
+            <p style="margin-top: 15px; font-size: 0.95rem; color: var(--text-main);">Identificamos uma pendência na sua mensalidade.</p>
+            
+            <div style="background: var(--input-bg); padding: 15px; border-radius: var(--radius-md); margin: 20px 0; border: 1px dashed var(--panel-border);">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Para liberar seu sistema</span>
+                <strong style="color: #10b981; font-size: 1.1rem;">Efetue o pagamento nas formas disponíveis</strong>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Após realizar o pagamento, encaminhe o comprovante para o administrador para que a sua chave de acesso seja reativada.</p>
+            
+            <button class="btn btn-outline" onclick="fazerLogout()" style="width: 100%; margin-top: 20px;"><i class="fas fa-power-off"></i> Voltar para o Login</button>
+        </div>
+    </div>
 
     <!-- TELA DE LOGIN -->
     <div id="login-wrapper">
         <div class="login-box card">
             <h1><i class="fas fa-chart-pie"></i> BI Delivery</h1>
             <p>Acesse o seu SaaS Financeiro na nuvem</p>
-            
             <div class="login-error" id="loginError">Usuário ou senha incorretos.</div>
-            
             <form id="formLogin">
                 <div class="form-group">
                     <label>E-mail</label>
@@ -187,12 +204,9 @@
                     <label>Senha</label>
                     <input type="password" id="authPassword" placeholder="******" required>
                 </div>
-                
-                <!-- BOTÃO ESQUECEU A SENHA -->
                 <div style="text-align: right; margin-top: -5px; margin-bottom: 15px;">
                     <a href="#" onclick="recuperarSenha()" style="font-size: 0.8rem; color: var(--accent); text-decoration: none;">Esqueceu a senha?</a>
                 </div>
-
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
                     <i class="fas fa-sign-in-alt"></i> Acessar Painel
                 </button>
@@ -205,15 +219,14 @@
 
     <!-- NAVEGAÇÃO LATERAL -->
     <div class="sidebar" id="sidebar" style="display: none;">
-        <div class="sidebar-logo">
-            <i class="fas fa-chart-pie"></i>
-            <span>BI Delivery</span>
-        </div>
+        <div class="sidebar-logo"><i class="fas fa-chart-pie"></i><span>BI Delivery</span></div>
         <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i><span>Visão Geral</span></div>
         <div class="nav-item" onclick="switchTab('vendas', this)"><i class="fas fa-motorcycle"></i><span>Lançar Vendas</span></div>
         <div class="nav-item" onclick="switchTab('despesas', this)"><i class="fas fa-file-invoice-dollar"></i><span>Despesas Op.</span></div>
         <div class="nav-item" onclick="switchTab('receitas', this)"><i class="fas fa-hand-holding-usd"></i><span>Receitas Avulsas</span></div>
         <div class="nav-item" onclick="switchTab('produtos', this)"><i class="fas fa-box-open"></i><span>Base de Produtos</span></div>
+        <!-- ABA MASTER ADMIN (OCULTA POR PADRÃO) -->
+        <div class="nav-item" id="nav-admin" style="display: none; background: rgba(245, 158, 11, 0.1); color: #f59e0b;" onclick="switchTab('admin', this)"><i class="fas fa-user-shield"></i><span>Gestão SaaS Admin</span></div>
     </div>
 
     <!-- CONTAINER PRINCIPAL -->
@@ -227,17 +240,16 @@
                 <button class="toggle-btn" onclick="toggleTheme()" title="Modo Escuro"><i class="fas fa-moon" id="themeIcon"></i></button>
                 <button class="btn btn-outline" onclick="gerarPDF()"><i class="fas fa-file-pdf" style="color: #ef4444;"></i> PDF</button>
                 <button class="btn btn-outline" onclick="gerarExcel()"><i class="fas fa-file-excel" style="color: #10b981;"></i> Excel</button>
-                
-                <div class="user-profile" onclick="abrirModalPerfil()" title="Configurações do Perfil">
+                <div class="user-profile" onclick="abrirModalPerfil()">
                     <div class="avatar" id="avatarUsuario">U</div>
                     <span id="nomeUsuario" style="font-weight: 600; font-size: 0.85rem;">Usuário</span>
                 </div>
-                
-                <button class="btn btn-outline" onclick="fazerLogout()" title="Sair do sistema" style="border: none; color: #ef4444;"><i class="fas fa-power-off"></i></button>
+                <button class="btn btn-outline" onclick="fazerLogout()" style="border: none; color: #ef4444;"><i class="fas fa-power-off"></i></button>
             </div>
         </div>
 
         <div class="content-container" id="pdfContent">
+            
             <!-- ABA 1: DASHBOARD -->
             <div id="view-dashboard" class="view-section active">
                 <div class="controls-wrapper" data-html2canvas-ignore="true">
@@ -312,16 +324,14 @@
                             <div class="form-group"><label>Receita Líquida (R$)</label><input type="number" id="liquidoVenda" step="0.01" required></div>
                         </div>
                         <div class="form-group" style="margin-top: 10px; border-left: 3px solid #8b5cf6; padding-left: 10px;">
-                            <label style="color: #8b5cf6;">Produtos Vendidos (Serão deduzidos do Estoque)</label>
+                            <label style="color: #8b5cf6;">Produtos Vendidos</label>
                             <div style="display: flex; gap: 8px;">
                                 <select id="produtoSelect" style="flex: 1;"></select>
                                 <button type="button" class="btn btn-outline" onclick="addProdutoVenda()"><i class="fas fa-plus"></i> Inserir Item</button>
                             </div>
                             <div id="listaProdutosVenda" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
                         </div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button type="submit" id="btnSalvarVenda" class="btn btn-primary" style="flex: 1;"><i class="fas fa-save"></i> Salvar Registro</button>
-                        </div>
+                        <button type="submit" id="btnSalvarVenda" class="btn btn-primary" style="width:100%; margin-top:15px;"><i class="fas fa-save"></i> Salvar Registro</button>
                     </form>
                 </div>
             </div>
@@ -342,16 +352,14 @@
                                 </select>
                             </div>
                             <div class="form-group"><label>Valor (R$)</label><input type="number" id="valorDespesa" step="0.01" required></div>
-                            <div class="form-group"><label>Descrição / Referência</label><input type="text" id="descDespesa" placeholder="Ex: Comgás - Fatura" required></div>
+                            <div class="form-group"><label>Descrição / Referência</label><input type="text" id="descDespesa" placeholder="Ex: Conta de Luz" required></div>
                         </div>
                         <button type="submit" class="btn btn-primary" style="margin-top: 5px;"><i class="fas fa-plus"></i> Lançar Despesa</button>
                     </form>
                 </div>
-                <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
+                <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
                     <h3 style="font-size: 0.9rem; margin-bottom: 10px;">Histórico de Despesas</h3>
-                    <div style="overflow-y: auto; max-height: 250px;">
-                        <table id="tableDespesas"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
-                    </div>
+                    <table id="tableDespesas"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
 
@@ -362,44 +370,53 @@
                     <form id="formReceitasAvulsas">
                         <div class="form-grid">
                             <div class="form-group"><label>Data do Recebimento</label><input type="date" id="dataReceitaAvulsa" required></div>
-                            <div class="form-group"><label>Descrição da Receita</label><input type="text" id="descReceitaAvulsa" placeholder="Ex: Consultoria..." required></div>
+                            <div class="form-group"><label>Descrição da Receita</label><input type="text" id="descReceitaAvulsa" placeholder="Ex: Entrada manual de caixa" required></div>
                             <div class="form-group"><label>Valor Líquido (R$)</label><input type="number" id="valorReceitaAvulsa" step="0.01" required></div>
                         </div>
                         <button type="submit" id="btnSalvarReceitaAvulsa" class="btn btn-primary" style="margin-top: 5px;"><i class="fas fa-plus"></i> Lançar Receita Extra</button>
                     </form>
                 </div>
-                <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 10px;">Histórico de Receitas</h3>
-                    <div style="overflow-y: auto; max-height: 250px;">
-                        <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
-                    </div>
+                <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
+                    <h3 style="font-size: 0.9rem; margin-bottom: 10px;">Histórico de Receitas Extras</h3>
+                    <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
 
-            <!-- ABA 5: PRODUTOS E ESTOQUE -->
+            <!-- ABA 5: BASE DE PRODUTOS -->
             <div id="view-produtos" class="view-section">
                 <div class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-box-open text-accent"></i> Base de Produtos e Estoque</h2>
                     <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                        <input type="text" id="novoProdutoNome" placeholder="Nome do Produto (Ex: Burger)" style="flex: 2; min-width: 200px; padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main);">
-                        <input type="number" id="novoProdutoCusto" placeholder="Preço Custo (R$)" step="0.01" style="flex: 1; min-width: 120px; padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main);">
-                        <input type="number" id="novoProdutoQtd" placeholder="Qtd. Estoque" style="flex: 1; min-width: 120px; padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main);">
+                        <input type="text" id="novoProdutoNome" placeholder="Nome do Produto" style="flex: 2; min-width: 200px; padding: 8px;">
+                        <input type="number" id="novoProdutoCusto" placeholder="Preço Custo (R$)" step="0.01" style="flex: 1; min-width: 120px;">
+                        <input type="number" id="novoProdutoQtd" placeholder="Estoque Inicial" style="flex: 1; min-width: 120px;">
                         <button class="btn btn-primary" id="btnSalvarProduto" onclick="cadastrarProdutoBase()"><i class="fas fa-save"></i> Salvar</button>
                     </div>
                     <ul id="listaBaseProdutos" style="list-style: none; padding: 0;"></ul>
                 </div>
             </div>
 
+            <!-- ABA 6: EXCLUSIVA ADMIN (CONTRATOS) -->
+            <div id="view-admin" class="view-section">
+                <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
+                    <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; color:#f59e0b;"><i class="fas fa-user-shield"></i> Painel de Controle de Assinaturas (SaaS)</h2>
+                    <table id="tableAdminUsuarios">
+                        <thead><tr><th>E-mail Corporativo</th><th>Identificador Único (UID)</th><th>Status da Conta</th><th>Modificar Acesso</th></tr></thead>
+                        <tbody><tr><td colspan="4">Carregando carteira de clientes...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
         </div> 
     </div>
 
-    <!-- MODAL DE PERFIL -->
+    <!-- MODAL DE CONFIGURAÇÕES DE PERFIL -->
     <div id="modalPerfil" class="modal-overlay">
         <div class="modal-content card">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-user-cog text-accent"></i> Configurações da Conta</h3>
             <form id="formPerfil">
-                <div class="form-group"><label>Nome do Negócio / Usuário</label><input type="text" id="inputNomePerfil" placeholder="Ex: Meu Delivery" required></div>
-                <div class="form-group"><label>Logotipo ou Foto de Perfil</label><input type="file" id="inputFotoPerfil" accept="image/*" style="padding: 5px;"><small style="color: var(--text-muted); font-size: 0.75rem;">(Imagens quadradas ficam melhores)</small></div>
+                <div class="form-group"><label>Nome do Negócio</label><input type="text" id="inputNomePerfil" required></div>
+                <div class="form-group"><label>Logotipo da Empresa</label><input type="file" id="inputFotoPerfil" accept="image/*" style="padding: 5px;"></div>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="button" class="btn btn-outline" onclick="fecharModalPerfil()" style="flex: 1;">Cancelar</button>
                     <button type="submit" class="btn btn-primary" style="flex: 1;"><i class="fas fa-check"></i> Salvar</button>
@@ -410,7 +427,7 @@
 
     <script>
         // ==============================================================
-        // 1. CONFIGURAÇÃO DO FIREBASE (CDNs COMPAT)
+        // 1. CHAVES DO FIREBASE DO USUÁRIO
         // ==============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyChRVEv2hHqryfZdReGN8FeZYpCe5ANZ1Y",
@@ -426,14 +443,19 @@
         const db = firebase.firestore();
 
         // ==============================================================
-        // 2. VARIÁVEIS GLOBAIS
+        // CONFIGURAÇÃO MASTER DO ADMINISTRADOR
+        // ==============================================================
+        const MEU_EMAIL_ADMIN = "bno229@gmail.com"; 
+
+        // ==============================================================
+        // 2. VARIÁVEIS DE ESTADO
         // ==============================================================
         let currentUser = null;
         let bdVendas = [];
         let bdDespesas = [];
         let bdReceitasAvulsas = [];
         let bdProdutos = [];
-        let perfilDados = { nome: 'Usuário', foto: '' };
+        let perfilDados = { nome: 'Usuário', foto: '', statusAcesso: 'ativo' };
         
         let produtosTempVenda = []; 
         let graficosInstancias = {};
@@ -443,20 +465,62 @@
         let editandoIdProduto = null;
 
         const coresCanais = { 'iFood': '#ef4444', 'Keeta': '#10b981', '99 Foods': '#f59e0b', 'Outras Receitas': '#64748b' };
+        
+        document.getElementById('dataVenda').valueAsDate = new Date();
+        document.getElementById('dataDespesa').valueAsDate = new Date();
+        document.getElementById('dataReceitaAvulsa').valueAsDate = new Date();
 
         // ==============================================================
-        // 3. MONITOR DE AUTENTICAÇÃO E RECUPERAÇÃO DE SENHA
+        // 3. MONITOR DE AUTENTICAÇÃO E BLOQUEIO DIGITAL
         // ==============================================================
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                document.getElementById('login-wrapper').style.display = 'none';
-                document.getElementById('sidebar').style.display = 'flex';
-                document.getElementById('mainWrapper').style.display = 'flex';
+                
+                // Trata a criação automática do documento de metadados do cliente para evitar regras nulas
+                db.collection('usuarios').doc(user.uid).get().then(doc => {
+                    if(!doc.exists) {
+                        db.collection('usuarios').doc(user.uid).set({
+                            email: user.email,
+                            nome: "Nova Loja Cadastrada",
+                            statusAcesso: "ativo"
+                        });
+                    }
+                });
+
+                // Escuta em tempo real o status de pagamento da conta
+                db.collection('usuarios').doc(user.uid).onSnapshot(doc => {
+                    if (doc.exists) {
+                        perfilDados = doc.data();
+                        
+                        if(perfilDados.statusAcesso === 'bloqueado' && user.email !== MEU_EMAIL_ADMIN) {
+                            // Bricka o painel e joga na tela de bloqueio insolúvel no cliente
+                            document.getElementById('block-wrapper').style.display = 'flex';
+                            document.getElementById('login-wrapper').style.display = 'none';
+                            document.getElementById('sidebar').style.display = 'none';
+                            document.getElementById('mainWrapper').style.display = 'none';
+                        } else {
+                            document.getElementById('block-wrapper').style.display = 'none';
+                            document.getElementById('login-wrapper').style.display = 'none';
+                            document.getElementById('sidebar').style.display = 'flex';
+                            document.getElementById('mainWrapper').style.display = 'flex';
+                            renderizarPerfilUI();
+                            carregarDadosDaNuvem();
+                        }
+                    }
+                });
+
+                // Condição para renderizar o botão administrativo oculto
+                if (user.email === MEU_EMAIL_ADMIN) {
+                    document.getElementById('nav-admin').style.display = 'flex';
+                } else {
+                    document.getElementById('nav-admin').style.display = 'none';
+                }
+
                 applyTheme();
-                carregarDadosDaNuvem();
             } else {
                 currentUser = null;
+                document.getElementById('block-wrapper').style.display = 'none';
                 document.getElementById('login-wrapper').style.display = 'flex';
                 document.getElementById('sidebar').style.display = 'none';
                 document.getElementById('mainWrapper').style.display = 'none';
@@ -465,10 +529,9 @@
 
         document.getElementById('formLogin').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPassword').value;
-            auth.signInWithEmailAndPassword(email, pass).catch(err => {
-                document.getElementById('loginError').innerText = "Erro ao entrar: " + err.message;
+            auth.signInWithEmailAndPassword(document.getElementById('authEmail').value, document.getElementById('authPassword').value)
+            .catch(err => {
+                document.getElementById('loginError').innerText = "Erro: " + err.message;
                 document.getElementById('loginError').style.display = 'block';
             });
         });
@@ -476,40 +539,25 @@
         function criarConta() {
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
-            if(!email || !pass) return alert("Preencha e-mail e senha para criar a conta.");
-            auth.createUserWithEmailAndPassword(email, pass).then(() => {
-                alert("Conta criada com sucesso!");
-            }).catch(err => {
-                document.getElementById('loginError').innerText = "Erro ao criar: " + err.message;
-                document.getElementById('loginError').style.display = 'block';
-            });
+            if(!email || !pass) return alert("Preencha as credenciais.");
+            auth.createUserWithEmailAndPassword(email, pass).then(cred => {
+                db.collection('usuarios').doc(cred.user.uid).set({
+                    email: email, nome: "Minha Empresa", statusAcesso: "ativo"
+                });
+                alert("Conta SaaS criada!");
+            }).catch(err => alert(err.message));
         }
 
-        // Função Nova: Recuperar Senha
         function recuperarSenha() {
             const email = document.getElementById('authEmail').value;
-            
-            // Verifica se o usuário digitou o e-mail antes de clicar
-            if (!email) {
-                alert("Por favor, digite seu e-mail no campo acima para receber o link de recuperação.");
-                return;
-            }
-
-            // Pede ao Firebase para enviar o e-mail de recuperação
-            auth.sendPasswordResetEmail(email)
-                .then(() => {
-                    alert("E-mail de recuperação enviado! Verifique sua caixa de entrada (e a pasta de Spam).");
-                })
-                .catch(err => {
-                    document.getElementById('loginError').innerText = "Erro ao recuperar: " + err.message;
-                    document.getElementById('loginError').style.display = 'block';
-                });
+            if (!email) return alert("Insira o e-mail no campo correspondente.");
+            auth.sendPasswordResetEmail(email).then(() => alert("E-mail de redefinição enviado com sucesso!"));
         }
 
         function fazerLogout() { auth.signOut(); }
 
         // ==============================================================
-        // 4. SYNC FIRESTORE
+        // 4. PIPELINE DE DADOS (FIRESTORE CLOUD)
         // ==============================================================
         function carregarDadosDaNuvem() {
             const uid = currentUser.uid;
@@ -517,35 +565,57 @@
             db.collection('vendas').where('userId', '==', uid).onSnapshot(snap => {
                 bdVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 atualizarDashboard();
-            }, err => console.log("Erro Vendas:", err));
+            });
 
             db.collection('despesas').where('userId', '==', uid).onSnapshot(snap => {
                 bdDespesas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 atualizarDashboard();
-            }, err => console.log("Erro Despesas:", err));
+            });
 
             db.collection('receitas').where('userId', '==', uid).onSnapshot(snap => {
                 bdReceitasAvulsas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 atualizarDashboard();
-            }, err => console.log("Erro Receitas:", err));
+            });
 
             db.collection('produtos').where('userId', '==', uid).onSnapshot(snap => {
                 bdProdutos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarBaseProdutos();
                 atualizarSelectProdutos();
                 atualizarDashboard();
-            }, err => console.log("Erro Produtos:", err));
-
-            db.collection('usuarios').doc(uid).onSnapshot(doc => {
-                if (doc.exists) {
-                    perfilDados = doc.data();
-                    renderizarPerfilUI();
-                }
-            }, err => console.log("Erro Usuário:", err));
+            });
         }
 
         // ==============================================================
-        // 5. PERFIL WHITE LABEL
+        // 5. MÓDULO EXCLUSIVO ADMIN (GESTÃO DE CLIENTES)
+        // ==============================================================
+        async function carregarListaUsuariosAdmin() {
+            if(currentUser.email !== MEU_EMAIL_ADMIN) return;
+            const snapshot = await db.collection('usuarios').get();
+            const tbody = document.querySelector('#tableAdminUsuarios tbody');
+            tbody.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const u = doc.data();
+                const corStatus = u.statusAcesso === 'ativo' ? '#10b981' : '#ef4444';
+                tbody.innerHTML += `<tr>
+                    <td><b>${u.email}</b></td>
+                    <td><small>${doc.id}</small></td>
+                    <td style="color:${corStatus}; font-weight:700;">${u.statusAcesso ? u.statusAcesso.toUpperCase() : 'ATIVO'}</td>
+                    <td>
+                        <button class="btn btn-outline" style="padding:4px 8px; border-color:#10b981; color:#10b981;" onclick="alterarStatusConta('${doc.id}', 'ativo')"><i class="fas fa-check"></i> Ativar</button>
+                        <button class="btn btn-outline" style="padding:4px 8px; border-color:#ef4444; color:#ef4444;" onclick="alterarStatusConta('${doc.id}', 'bloqueado')"><i class="fas fa-ban"></i> Bloquear</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function alterarStatusConta(uid, novoStatus) {
+            db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus })
+            .then(() => { alert('Status da assinatura modificado!'); carregarListaUsuariosAdmin(); });
+        }
+
+        // ==============================================================
+        // 6. CONTROLADORES INTERNOS (MÓDULOS DE NEGÓCIO)
         // ==============================================================
         function renderizarPerfilUI() {
             document.getElementById('nomeUsuario').innerText = perfilDados.nome || 'Usuário';
@@ -553,168 +623,86 @@
             if (perfilDados.foto) {
                 avatarDiv.innerHTML = `<img src="${perfilDados.foto}" alt="Logo">`;
                 avatarDiv.style.background = 'transparent';
-                avatarDiv.style.border = 'none';
             } else {
                 avatarDiv.innerHTML = (perfilDados.nome || 'U').charAt(0).toUpperCase();
-                avatarDiv.style.background = 'var(--accent)';
-                avatarDiv.style.border = '2px solid var(--accent)';
             }
         }
 
         function abrirModalPerfil() {
             document.getElementById('inputNomePerfil').value = perfilDados.nome || '';
-            document.getElementById('inputFotoPerfil').value = ''; 
             document.getElementById('modalPerfil').classList.add('active');
         }
-
         function fecharModalPerfil() { document.getElementById('modalPerfil').classList.remove('active'); }
 
         document.getElementById('formPerfil').addEventListener('submit', function(e) {
             e.preventDefault();
             const novoNome = document.getElementById('inputNomePerfil').value.trim();
             const fileInput = document.getElementById('inputFotoPerfil');
-            let dataAtualizada = { nome: novoNome || 'Usuário' };
+            let pacote = { nome: novoNome };
 
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    dataAtualizada.foto = e.target.result; 
-                    db.collection('usuarios').doc(currentUser.uid).set(dataAtualizada, {merge: true}).then(fecharModalPerfil);
+                    pacote.foto = e.target.result; 
+                    db.collection('usuarios').doc(currentUser.uid).update(pacote).then(fecharModalPerfil);
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                db.collection('usuarios').doc(currentUser.uid).set(dataAtualizada, {merge: true}).then(fecharModalPerfil);
+                db.collection('usuarios').doc(currentUser.uid).update(pacote).then(fecharModalPerfil);
             }
         });
 
-        // ==============================================================
-        // 6. PRODUTOS & ESTOQUE
-        // ==============================================================
+        // PRODUTOS
         function cadastrarProdutoBase() {
             const nome = document.getElementById('novoProdutoNome').value.trim();
             const custo = parseFloat(document.getElementById('novoProdutoCusto').value) || 0;
             const estoque = parseInt(document.getElementById('novoProdutoQtd').value) || 0;
-            
             if(nome) {
-                if (editandoIdProduto !== null) {
-                    db.collection('produtos').doc(editandoIdProduto).update({ nome, custo, estoque });
-                    editandoIdProduto = null;
-                    document.getElementById('btnSalvarProduto').innerHTML = '<i class="fas fa-save"></i> Salvar';
-                } else {
-                    const prodExt = bdProdutos.find(p => p.nome.toLowerCase() === nome.toLowerCase());
-                    if(prodExt) {
-                        db.collection('produtos').doc(prodExt.id).update({ custo, estoque: prodExt.estoque + estoque });
-                    } else {
-                        db.collection('produtos').add({ nome, custo, estoque, userId: currentUser.uid });
-                    }
-                }
+                db.collection('produtos').add({ nome, custo, estoque, userId: currentUser.uid });
                 document.getElementById('novoProdutoNome').value = ''; document.getElementById('novoProdutoCusto').value = ''; document.getElementById('novoProdutoQtd').value = '';
             }
         }
 
-        function editarProdutoBase(id) {
-            const prod = bdProdutos.find(p => p.id === id);
-            document.getElementById('novoProdutoNome').value = prod.nome;
-            document.getElementById('novoProdutoCusto').value = prod.custo;
-            document.getElementById('novoProdutoQtd').value = prod.estoque;
-            editandoIdProduto = id;
-            document.getElementById('btnSalvarProduto').innerHTML = '<i class="fas fa-edit"></i> Atualizar';
-        }
-
-        function deletarProdutoBase(id) {
-            if(confirm("Deseja apagar este produto da base?")) db.collection('produtos').doc(id).delete();
-        }
+        function deletarProdutoBase(id) { if(confirm("Apagar produto?")) db.collection('produtos').doc(id).delete(); }
 
         function renderizarBaseProdutos() {
             const ul = document.getElementById('listaBaseProdutos'); ul.innerHTML = '';
             bdProdutos.forEach((p) => {
-                ul.innerHTML += `<li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--panel-border); font-size: 0.9rem;">
-                    <div><strong style="color: var(--text-main);">${p.nome}</strong><br><span style="color: var(--text-muted); font-size: 0.8rem;">Custo: ${formatarMoeda(p.custo)} | <span style="color: #8b5cf6; font-weight: 600;">Estoque: ${p.estoque} un.</span></span></div>
-                    <div>
-                        <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem;" onclick="editarProdutoBase('${p.id}')"><i class="fas fa-edit" style="color: var(--accent);"></i></button>
-                        <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem; border-color: #fca5a5;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash" style="color: #ef4444;"></i></button>
-                    </div></li>`;
+                ul.innerHTML += `<li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--panel-border);">
+                    <div><b>${p.nome}</b><br><small>Custo: ${formatarMoeda(p.custo)} | Estoque: ${p.estoque} un.</small></div>
+                    <button class="btn btn-outline" style="color:red;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash"></i></button>
+                </li>`;
             });
         }
 
         function atualizarSelectProdutos() {
-            const select = document.getElementById('produtoSelect'); select.innerHTML = '<option value="">-- Escolha um produto --</option>';
-            bdProdutos.forEach(p => { select.innerHTML += `<option value="${p.nome}">${p.nome} (Estoque: ${p.estoque})</option>`; });
+            const select = document.getElementById('produtoSelect'); select.innerHTML = '<option value="">-- Vincular Item Vendido --</option>';
+            bdProdutos.forEach(p => { select.innerHTML += `<option value="${p.nome}">${p.nome}</option>`; });
         }
 
         function addProdutoVenda() { const val = document.getElementById('produtoSelect').value; if(val) { produtosTempVenda.push(val); renderizarChipsVenda(); } }
         function remProdutoVenda(i) { produtosTempVenda.splice(i, 1); renderizarChipsVenda(); }
         function renderizarChipsVenda() {
             const div = document.getElementById('listaProdutosVenda'); div.innerHTML = '';
-            produtosTempVenda.forEach((p, i) => { div.innerHTML += `<div style="background: var(--input-bg); padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; border: 1px solid var(--panel-border);">${p} <i class="fas fa-times" style="color: red; cursor: pointer; margin-left: 4px;" onclick="remProdutoVenda(${i})"></i></div>`; });
+            produtosTempVenda.forEach((p, i) => { div.innerHTML += `<div style="background:var(--input-bg); padding:4px; border:1px solid var(--panel-border); margin:2px; border-radius:4px;">${p} <i class="fas fa-times" style="color:red; cursor:pointer;" onclick="remProdutoVenda(${i})"></i></div>`; });
         }
 
-        // ==============================================================
-        // 7. MOVIMENTAÇÃO DE VENDAS
-        // ==============================================================
+        // LANÇAMENTO DE VENDAS
         document.getElementById('formVendas').addEventListener('submit', function(e) {
             e.preventDefault();
-            const venda = {
+            db.collection('vendas').add({
                 data: document.getElementById('dataVenda').value, diaSemana: document.getElementById('diaSemanaVenda').value,
                 canal: document.getElementById('canalVenda').value, qtdPedidos: parseInt(document.getElementById('qtdPedidosVenda').value),
                 qtdItens: parseInt(document.getElementById('qtdItensVenda').value), faturamento: parseFloat(document.getElementById('faturamentoVenda').value),
                 receitaLiquida: parseFloat(document.getElementById('liquidoVenda').value), produtos: [...produtosTempVenda],
                 userId: currentUser.uid
-            };
-
-            if(editandoIdVenda) {
-                const vendaAntiga = bdVendas.find(v => v.id === editandoIdVenda);
-                vendaAntiga.produtos.forEach(pNome => { const prod = bdProdutos.find(p => p.nome === pNome); if(prod) db.collection('produtos').doc(prod.id).update({ estoque: prod.estoque + 1 }); });
-                db.collection('vendas').doc(editandoIdVenda).update(venda);
-                editandoIdVenda = null; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-save"></i> Salvar Registro';
-            } else { db.collection('vendas').add(venda); }
-
-            produtosTempVenda.forEach(pNome => { const prod = bdProdutos.find(p => p.nome === pNome); if(prod) db.collection('produtos').doc(prod.id).update({ estoque: prod.estoque - 1 }); });
-            
-            document.getElementById('formVendas').reset(); document.getElementById('dataVenda').valueAsDate = new Date();
-            produtosTempVenda = []; renderizarChipsVenda(); alert("Venda salva na nuvem!");
+            });
+            document.getElementById('formVendas').reset(); produtosTempVenda = []; renderizarChipsVenda(); alert("Lançamento efetuado!");
         });
 
-        function deletarVenda(id) {
-            if(confirm("Excluir venda? Itens voltarão ao estoque.")) {
-                const venda = bdVendas.find(v => v.id === id);
-                if(venda) {
-                    venda.produtos.forEach(pNome => { const prod = bdProdutos.find(p => p.nome === pNome); if(prod) db.collection('produtos').doc(prod.id).update({ estoque: prod.estoque + 1 }); });
-                    db.collection('vendas').doc(id).delete();
-                }
-            }
-        }
+        function deletarVenda(id) { if(confirm("Excluir venda?")) db.collection('vendas').doc(id).delete(); }
 
-        function editarLancamento(id) {
-            const item = bdVendas.find(x => x.id === id); if(!item) return;
-            document.querySelectorAll('.nav-item')[1].click();
-            document.getElementById('dataVenda').value = item.data; document.getElementById('diaSemanaVenda').value = item.diaSemana;
-            document.getElementById('canalVenda').value = item.canal; document.getElementById('qtdPedidosVenda').value = item.qtdPedidos;
-            document.getElementById('qtdItensVenda').value = item.qtdItens; document.getElementById('faturamentoVenda').value = item.faturamento;
-            document.getElementById('liquidoVenda').value = item.receitaLiquida;
-            produtosTempVenda = [...item.produtos]; renderizarChipsVenda();
-            editandoIdVenda = id; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-edit"></i> Atualizar Registro';
-        }
-
-        function renderizarTabelaVendas(dados) {
-            const tbody = document.querySelector('#historyTable tbody'); tbody.innerHTML = '';
-            const ord = [...dados].sort((a,b) => new Date(b.data) - new Date(a.data));
-            ord.forEach(v => {
-                tbody.innerHTML += `<tr>
-                    <td>${v.data.split('-').reverse().join('/')}</td>
-                    <td><span style="color:${coresCanais[v.canal]}"><i class="fas fa-circle" style="font-size:8px;"></i></span> ${v.canal}</td>
-                    <td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td><td>${v.qtdPedidos}</td>
-                    <td>
-                        <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem;" onclick="editarLancamento('${v.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem; border-color: #fca5a5; color: #ef4444;" onclick="deletarVenda('${v.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        // ==============================================================
-        // 8. DESPESAS E RECEITAS AVULSAS
-        // ==============================================================
+        // DESPESAS OPERACIONAIS
         document.getElementById('formDespesas').addEventListener('submit', function(e) {
             e.preventDefault();
             db.collection('despesas').add({
@@ -722,143 +710,95 @@
                 valor: parseFloat(document.getElementById('valorDespesa').value), descricao: document.getElementById('descDespesa').value,
                 userId: currentUser.uid
             });
-            document.getElementById('formDespesas').reset(); document.getElementById('dataDespesa').valueAsDate = new Date();
+            document.getElementById('formDespesas').reset();
         });
+        function deletarDespesa(id) { db.collection('despesas').doc(id).delete(); }
 
-        function deletarDespesa(id) { if(confirm("Excluir despesa?")) db.collection('despesas').doc(id).delete(); }
-
-        function renderizarTabelaDespesas() {
-            const tbody = document.querySelector('#tableDespesas tbody'); tbody.innerHTML = '';
-            const ord = [...bdDespesas].sort((a,b) => new Date(b.data) - new Date(a.data));
-            ord.forEach(d => {
-                tbody.innerHTML += `<tr><td>${d.data.split('-').reverse().join('/')}</td><td>${d.categoria}</td><td>${d.descricao}</td><td style="color:#ef4444;">${formatarMoeda(d.valor)}</td>
-                <td><button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem; border-color: #fca5a5; color: #ef4444;" onclick="deletarDespesa('${d.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
-            });
-        }
-
+        // RECEITAS AVULSAS
         document.getElementById('formReceitasAvulsas').addEventListener('submit', function(e) {
             e.preventDefault();
-            const rec = {
+            db.collection('receitas').add({
                 data: document.getElementById('dataReceitaAvulsa').value, descricao: document.getElementById('descReceitaAvulsa').value,
                 valor: parseFloat(document.getElementById('valorReceitaAvulsa').value), userId: currentUser.uid
-            };
-            if(editandoIdReceita) { db.collection('receitas').doc(editandoIdReceita).update(rec); editandoIdReceita = null; document.getElementById('btnSalvarReceitaAvulsa').innerHTML = '<i class="fas fa-plus"></i> Lançar Receita Extra'; } 
-            else { db.collection('receitas').add(rec); }
-            document.getElementById('formReceitasAvulsas').reset(); document.getElementById('dataReceitaAvulsa').valueAsDate = new Date();
-        });
-
-        function editarReceitaAvulsa(id) {
-            const item = bdReceitasAvulsas.find(x => x.id === id); if(!item) return;
-            document.getElementById('dataReceitaAvulsa').value = item.data; document.getElementById('descReceitaAvulsa').value = item.descricao; document.getElementById('valorReceitaAvulsa').value = item.valor;
-            editandoIdReceita = id; document.getElementById('btnSalvarReceitaAvulsa').innerHTML = '<i class="fas fa-edit"></i> Atualizar Extra';
-        }
-
-        function deletarReceitaAvulsa(id) { if(confirm("Excluir Receita Avulsa?")) db.collection('receitas').doc(id).delete(); }
-
-        function renderizarTabelaReceitasAvulsas() {
-            const tbody = document.querySelector('#tableReceitasAvulsas tbody'); tbody.innerHTML = '';
-            const ord = [...bdReceitasAvulsas].sort((a,b) => new Date(b.data) - new Date(a.data));
-            ord.forEach(r => {
-                tbody.innerHTML += `<tr><td>${r.data.split('-').reverse().join('/')}</td><td>${r.descricao}</td><td style="color:#10b981;">${formatarMoeda(r.valor)}</td>
-                <td><button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem;" onclick="editarReceitaAvulsa('${r.id}')"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.7rem; border-color: #fca5a5; color: #ef4444;" onclick="deletarReceitaAvulsa('${r.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
-        }
+            document.getElementById('formReceitasAvulsas').reset();
+        });
+        function deletarReceitaAvulsa(id) { db.collection('receitas').doc(id).delete(); }
 
         // ==============================================================
-        // 9. NAVEGAÇÃO INTERNA & ARQUITETURA SPA
+        // 7. MOTOR DO DASHBOARD, TABELAS E RENDER CHARTS
         // ==============================================================
         function switchTab(tabId, element) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabId).classList.add('active');
             element.classList.add('active');
-            const titulos = { 'dashboard': 'Visão Geral (Dashboard)', 'vendas': 'Lançamento de Vendas', 'despesas': 'Despesas Operacionais', 'receitas': 'Receitas Avulsas', 'produtos': 'Cadastro de Produtos e Estoque' };
-            document.getElementById('pageTitle').innerText = titulos[tabId];
-            if(tabId === 'dashboard') atualizarDashboard(); 
+            
+            if(tabId === 'admin') carregarListaUsuariosAdmin();
+            if(tabId === 'dashboard') atualizarDashboard();
         }
 
+        function formatarMoeda(v) { return `R$ ${v.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; }
+        function limparFiltro() { document.getElementById('filterStart').value = ''; document.getElementById('filterEnd').value = ''; atualizarDashboard(); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); setTimeout(() => { Object.values(graficosInstancias).forEach(c => c.resize()); }, 300); }
-        
         function applyTheme() {
             const isDark = localStorage.getItem('biThemeDark') === 'true';
             if (isDark) { document.body.classList.add('dark-mode'); document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun'); } 
             else { document.body.classList.remove('dark-mode'); document.getElementById('themeIcon').classList.replace('fa-sun', 'fa-moon'); }
-            Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
         }
-
         function toggleTheme() { localStorage.setItem('biThemeDark', document.body.classList.toggle('dark-mode')); applyTheme(); atualizarDashboard(); }
 
-        function limparFiltro() { document.getElementById('filterStart').value = ''; document.getElementById('filterEnd').value = ''; atualizarDashboard(); }
-        function formatarMoeda(v) { return `R$ ${v.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; }
-
-        // ==============================================================
-        // 10. MOTOR DO DASHBOARD & RENDER DE KPIs
-        // ==============================================================
         function atualizarDashboard() {
-            renderizarTabelaReceitasAvulsas(); renderizarTabelaDespesas(); 
+            // Render de Históricos Secundários
+            const tBodyD = document.querySelector('#tableDespesas tbody'); tBodyD.innerHTML = '';
+            bdDespesas.forEach(d => { tBodyD.innerHTML += `<tr><td>${d.data}</td><td>${d.categoria}</td><td>${d.descricao}</td><td style="color:red;">${formatarMoeda(d.valor)}</td><td><i class="fas fa-trash" onclick="deletarDespesa('${d.id}')" style="cursor:pointer; color:red;"></i></td></tr>`; });
+            
+            const tBodyR = document.querySelector('#tableReceitasAvulsas tbody'); tBodyR.innerHTML = '';
+            bdReceitasAvulsas.forEach(r => { tBodyR.innerHTML += `<tr><td>${r.data}</td><td>${r.descricao}</td><td style="color:green;">${formatarMoeda(r.valor)}</td><td><i class="fas fa-trash" onclick="deletarReceitaAvulsa('${r.id}')" style="cursor:pointer; color:red;"></i></td></tr>`; });
+
             if(!document.getElementById('view-dashboard').classList.contains('active')) return;
 
+            // Filtros de Escopo Temporais
             const fStart = document.getElementById('filterStart').value; const fEnd = document.getElementById('filterEnd').value;
-            let vFiltradas = bdVendas; let dFiltradas = bdDespesas; let rFiltradas = bdReceitasAvulsas;
+            let vFiltradas = bdVendas.filter(v => (!fStart || v.data >= fStart) && (!fEnd || v.data <= fEnd));
+            let dFiltradas = bdDespesas.filter(d => (!fStart || d.data >= fStart) && (!fEnd || d.data <= fEnd));
+            let rFiltradas = bdReceitasAvulsas.filter(r => (!fStart || r.data >= fStart) && (!fEnd || r.data <= fEnd));
 
-            if(fStart || fEnd) {
-                vFiltradas = bdVendas.filter(v => (!fStart || v.data >= fStart) && (!fEnd || v.data <= fEnd));
-                dFiltradas = bdDespesas.filter(d => (!fStart || d.data >= fStart) && (!fEnd || d.data <= fEnd));
-                rFiltradas = bdReceitasAvulsas.filter(r => (!fStart || r.data >= fStart) && (!fEnd || r.data <= fEnd));
-            }
+            // Render Histórico Vendas Principal
+            const tbodyV = document.querySelector('#historyTable tbody'); tbodyV.innerHTML = '';
+            vFiltradas.forEach(v => {
+                tbodyV.innerHTML += `<tr><td>${v.data}</td><td><span style="color:${coresCanais[v.canal]}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:green;">${formatarMoeda(v.receitaLiquida)}</td><td>${v.qtdPedidos}</td><td><button class="btn btn-outline" onclick="deletarVenda('${v.id}')" style="padding:2px 6px; color:red; border-color:red;"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
 
-            renderizarTabelaVendas(vFiltradas); 
-
+            // Cálculos Consolidados de KPI
             let totalFatVendas = 0, totalRecVendas = 0, totalPed = 0, totalDesp = 0, totalRecAvulsas = 0;
             let dadosPorCanal = { 'iFood': {fat:0, rec:0, ped:0}, 'Keeta': {fat:0, rec:0, ped:0}, '99 Foods': {fat:0, rec:0, ped:0}, 'Outras Receitas': {fat:0, rec:0, ped:0} };
             let dadosPorDia = { 'Segunda-feira':0, 'Terça-feira':0, 'Quarta-feira':0, 'Quinta-feira':0, 'Sexta-feira':0, 'Sábado':0, 'Domingo':0 };
             let contagemProdutos = {};
-            
+
             vFiltradas.forEach(v => {
                 totalFatVendas += v.faturamento; totalRecVendas += v.receitaLiquida; totalPed += v.qtdPedidos;
                 if(dadosPorCanal[v.canal]) { dadosPorCanal[v.canal].fat += v.faturamento; dadosPorCanal[v.canal].rec += v.receitaLiquida; dadosPorCanal[v.canal].ped += v.qtdPedidos; }
                 if(dadosPorDia[v.diaSemana] !== undefined) dadosPorDia[v.diaSemana] += v.faturamento;
-                v.produtos.forEach(prod => { contagemProdutos[prod] = (contagemProdutos[prod] || 0) + 1; });
+                if(v.produtos) v.produtos.forEach(p => { contagemProdutos[p] = (contagemProdutos[p] || 0) + 1; });
             });
+            dFiltradas.forEach(d => totalDesp += d.valor);
+            rFiltradas.forEach(r => totalRecAvulsas += r.valor);
 
-            dFiltradas.forEach(d => { totalDesp += d.valor; });
-            rFiltradas.forEach(r => { totalRecAvulsas += r.valor; });
-
-            const taxa = totalFatVendas > 0 ? ((totalFatVendas - totalRecVendas) / totalFatVendas) * 100 : 0;
-            const ticket = totalPed > 0 ? (totalFatVendas / totalPed) : 0;
             const totalFatGlobal = totalFatVendas + totalRecAvulsas;
             const totalRecGlobal = totalRecVendas + totalRecAvulsas;
-            const lucroLiq = totalRecGlobal - totalDesp;
-            const margemLiq = totalFatGlobal > 0 ? (lucroLiq / totalFatGlobal) * 100 : 0; 
-            const valorTotalEstoque = bdProdutos.reduce((acc, p) => acc + (p.custo * p.estoque), 0);
+            const lucroL = totalRecGlobal - totalDesp;
+            const margem = totalFatGlobal > 0 ? (lucroL / totalFatGlobal) * 100 : 0;
 
             document.getElementById('kpiFaturamento').innerText = formatarMoeda(totalFatGlobal);
             document.getElementById('kpiReceita').innerText = formatarMoeda(totalRecGlobal);
-            document.getElementById('kpiTaxa').innerText = `${taxa.toFixed(1)}%`;
-            document.getElementById('kpiTicket').innerText = formatarMoeda(ticket);
+            document.getElementById('kpiTaxa').innerText = totalFatVendas > 0 ? `${(((totalFatVendas - totalRecVendas)/totalFatVendas)*100).toFixed(1)}%` : '0%';
+            document.getElementById('kpiTicket').innerText = totalPed > 0 ? formatarMoeda(totalFatVendas / totalPed) : 'R$ 0,00';
             document.getElementById('kpiPedidos').innerText = totalPed;
             document.getElementById('kpiDespesas').innerText = formatarMoeda(totalDesp);
-            document.getElementById('kpiLucroLiq').innerText = formatarMoeda(lucroLiq);
-            document.getElementById('kpiMargem').innerText = `${margemLiq.toFixed(1)}%`;
-            document.getElementById('kpiEstoque').innerText = formatarMoeda(valorTotalEstoque);
-
-            let htmlFat = '', htmlRec = '', htmlTicket = '', htmlTaxa = '', htmlPedidos = '';
-            Object.keys(dadosPorCanal).forEach(c => {
-                const d = dadosPorCanal[c]; const tk = d.ped > 0 ? d.fat / d.ped : 0; const tx = d.fat > 0 ? ((d.fat - d.rec) / d.fat) * 100 : 0;
-                htmlFat += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${formatarMoeda(d.fat)}</b></div>`;
-                htmlRec += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${formatarMoeda(d.rec)}</b></div>`;
-                htmlTicket += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${formatarMoeda(tk)}</b></div>`;
-                htmlTaxa += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${tx.toFixed(1)}%</b></div>`;
-                htmlPedidos += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${d.ped}</b></div>`;
-            });
-            if(totalRecAvulsas > 0) {
-                htmlFat += `<div class="detail-row" style="border-top:1px dashed var(--panel-border); margin-top:4px; padding-top:4px;"><span style="color:var(--accent)">●</span> Extras: <b>${formatarMoeda(totalRecAvulsas)}</b></div>`;
-                htmlRec += `<div class="detail-row" style="border-top:1px dashed var(--panel-border); margin-top:4px; padding-top:4px;"><span style="color:var(--accent)">●</span> Extras: <b>${formatarMoeda(totalRecAvulsas)}</b></div>`;
-            }
-
-            document.getElementById('detFaturamento').innerHTML = htmlFat; document.getElementById('detReceita').innerHTML = htmlRec;
-            document.getElementById('detTicket').innerHTML = htmlTicket; document.getElementById('detTaxa').innerHTML = htmlTaxa; document.getElementById('detPedidos').innerHTML = htmlPedidos;
+            document.getElementById('kpiLucroLiq').innerText = formatarMoeda(lucroL);
+            document.getElementById('kpiMargem').innerText = `${margem.toFixed(1)}%`;
+            document.getElementById('kpiEstoque').innerText = formatarMoeda(bdProdutos.reduce((acc,p)=> acc + (p.custo*p.estoque), 0));
 
             renderizarGraficosDashboard(dadosPorCanal, dadosPorDia, contagemProdutos);
         }
@@ -872,38 +812,22 @@
             graficosInstancias['barChart'] = new Chart(document.getElementById('barChart').getContext('2d'), { type: 'bar', data: { labels: labelsCanal, datasets: [ { label: 'Fat. Bruto', data: labelsCanal.map(l => dadosPorCanal[l].fat), backgroundColor: labelsCanal.map(l => coresCanais[l]), borderRadius: 4 }, { label: 'Rec. Líq.', data: labelsCanal.map(l => dadosPorCanal[l].rec), backgroundColor: 'rgba(100, 116, 139, 0.3)', borderRadius: 4 } ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: gridColor } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } });
 
             prepararCanvas('diaSemanaChart');
-            const labelsDia = Object.keys(dadosPorDia);
-            graficosInstancias['diaSemanaChart'] = new Chart(document.getElementById('diaSemanaChart').getContext('2d'), { type: 'bar', data: { labels: labelsDia.map(l => l.substring(0,3)), datasets: [{ label: 'Faturamento', data: Object.values(dadosPorDia), backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { grid: { color: gridColor } }, x: { grid: { display: false } } } } });
+            graficosInstancias['diaSemanaChart'] = new Chart(document.getElementById('diaSemanaChart').getContext('2d'), { type: 'bar', data: { labels: Object.keys(dadosPorDia).map(d => d.substring(0,3)), datasets: [{ data: Object.values(dadosPorDia), backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { grid: { color: gridColor } }, x: { grid: { display: false } } } } });
 
             prepararCanvas('topProductsChart');
-            let arrayProdutos = Object.entries(contagemProdutos).sort((a,b) => b[1] - a[1]).slice(0, 10);
-            graficosInstancias['topProductsChart'] = new Chart(document.getElementById('topProductsChart').getContext('2d'), { type: 'bar', data: { labels: arrayProdutos.map(p => p[0]), datasets: [{ label: 'Vezes Vendido', data: arrayProdutos.map(p => p[1]), backgroundColor: '#10b981', borderRadius: 4, maxBarThickness: 20 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: { grid: { color: gridColor } }, y: { grid: { display: false } } } } });
+            let arrayProd = Object.entries(contagemProdutos).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            graficosInstancias['topProductsChart'] = new Chart(document.getElementById('topProductsChart').getContext('2d'), { type: 'bar', data: { labels: arrayProd.map(p => p[0]), datasets: [{ data: arrayProd.map(p => p[1]), backgroundColor: '#10b981', borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: { grid: { color: gridColor } }, y: { grid: { display: false } } } } });
 
             prepararCanvas('donutChart');
-            graficosInstancias['donutChart'] = new Chart(document.getElementById('donutChart').getContext('2d'), { type: 'doughnut', data: { labels: labelsCanal, datasets: [{ data: labelsCanal.map(l => dadosPorCanal[l].ped), backgroundColor: labelsCanal.map(l => coresCanais[l]), borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right' } } } });
+            graficosInstancias['donutChart'] = new Chart(document.getElementById('donutChart').getContext('2d'), { type: 'doughnut', data: { labels: labelsCanal, datasets: [{ data: labelsCanal.map(l => dadosPorCanal[l].ped), backgroundColor: labelsCanal.map(l => coresCanais[l]), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right' } } } });
         }
 
-        // ==============================================================
-        // 11. EXPORTADORES
-        // ==============================================================
+        // EXPORTADORES A4
         function gerarExcel() {
-            if (bdVendas.length === 0 && bdDespesas.length === 0 && bdReceitasAvulsas.length === 0) return alert("Não existem dados.");
-            const wsVendas = XLSX.utils.json_to_sheet(bdVendas.map(item => ({ 'Data': item.data.split('-').reverse().join('/'), 'Dia': item.diaSemana, 'Canal': item.canal, 'Faturamento': item.faturamento, 'Receita Líq.': item.receitaLiquida, 'Pedidos': item.qtdPedidos, 'Itens': item.qtdItens, 'Produtos': item.produtos.join(', ') })));
-            const wsDespesas = XLSX.utils.json_to_sheet(bdDespesas.map(d => ({ 'Data': d.data.split('-').reverse().join('/'), 'Categoria': d.categoria, 'Descrição': d.descricao, 'Valor': d.valor })));
-            const wsReceitas = XLSX.utils.json_to_sheet(bdReceitasAvulsas.map(r => ({ 'Data': r.data.split('-').reverse().join('/'), 'Descrição': r.descricao, 'Valor': r.valor })));
-            const workbook = XLSX.utils.book_new();
-            if(bdVendas.length > 0) XLSX.utils.book_append_sheet(workbook, wsVendas, "Vendas");
-            if(bdDespesas.length > 0) XLSX.utils.book_append_sheet(workbook, wsDespesas, "Despesas");
-            if(bdReceitasAvulsas.length > 0) XLSX.utils.book_append_sheet(workbook, wsReceitas, "Receitas Avulsas");
-            XLSX.writeFile(workbook, `Financeiro_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.xlsx`);
+            const ws = XLSX.utils.json_to_sheet(bdVendas); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Financeiro"); XLSX.writeFile(wb, "Relatorio_SaaS.xlsx");
         }
-
         function gerarPDF() {
-            const element = document.getElementById('pdfContent');
-            const opt = { margin: [5, 5], filename: `BI_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }};
-            document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('expanded'));
-            document.querySelector('.history-container').classList.add('expanded');
-            html2pdf().set(opt).from(element).save();
+            html2pdf().set({ margin:5, filename: 'Relatorio_BI.pdf', html2canvas:{scale:2}, jsPDF:{format:'a4', orientation:'landscape'} }).from(document.getElementById('pdfContent')).save();
         }
     </script>
 </body>

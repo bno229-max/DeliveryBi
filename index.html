@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI Delivery | SaaS Financeiro</title>
+    <title>BI Delivery | Painel Financeiro</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -17,11 +18,13 @@
 
     <style>
         :root {
+            /* Cores dos Canais */
             --ifood: #ef4444;      
             --keeta: #10b981;      
             --99foods: #f59e0b;    
             --outras: #64748b;     
             
+            /* Tema Light */
             --bg-color: #f8fafc;
             --panel-bg: #ffffff;
             --panel-border: #e2e8f0;
@@ -69,7 +72,11 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 12px 15px; box-shadow: var(--shadow-md); position: relative; z-index: 1; }
+        /* Utilidades Base */
+        .card {
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg); padding: 12px 15px; box-shadow: var(--shadow-md); position: relative; z-index: 1;
+        }
         body.dark-mode .card { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 
         .btn { padding: 8px 12px; border-radius: var(--radius-md); border: none; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
@@ -77,8 +84,6 @@
         .btn-primary:hover { background: var(--accent-hover); }
         .btn-outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
         .btn-outline:hover { background: var(--input-bg); border-color: var(--accent); }
-        .btn-danger { background: #ef4444; color: white; }
-        .btn-danger:hover { background: #dc2626; }
 
         /* Login Screen */
         #login-wrapper {
@@ -91,14 +96,22 @@
         .login-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem; }
         .login-error { color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none; }
 
-        /* Sidebar & Layout */
-        .sidebar { width: 240px; min-width: 240px; height: 100%; padding: 15px 10px; border-right: 1px solid var(--panel-border); background: var(--panel-bg); z-index: 10; transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; }
+        /* Sidebar de Navegação */
+        .sidebar {
+            width: 240px; min-width: 240px; height: 100%; padding: 15px 10px; border-right: 1px solid var(--panel-border);
+            background: var(--panel-bg); z-index: 10; transition: all 0.3s ease; position: relative; display: flex; flex-direction: column;
+        }
         body.dark-mode .sidebar { backdrop-filter: blur(20px); }
         .sidebar.collapsed { width: 60px; min-width: 60px; padding: 15px 5px; }
+        
         .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 20px; font-weight: 700; font-size: 1.1rem; color: var(--accent); white-space: nowrap; overflow: hidden;}
         .sidebar-logo i { font-size: 1.3rem; }
         .sidebar.collapsed .sidebar-logo span { display: none; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 6px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); transition: 0.2s; white-space: nowrap; overflow: hidden; font-size: 0.9rem; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 6px;
+            border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); transition: 0.2s; white-space: nowrap; overflow: hidden; font-size: 0.9rem;
+        }
         .nav-item:hover { background: var(--input-bg); color: var(--accent); }
         .nav-item.active { background: var(--accent); color: white; box-shadow: var(--shadow-sm); }
         .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
@@ -106,35 +119,55 @@
 
         /* Formulários */
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        .form-group { margin-bottom: 12px; text-align: left;}
+        .form-group { margin-bottom: 12px; text-align: left; }
         .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background: var(--input-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px 10px; background: var(--input-bg); border: 1px solid var(--panel-border);
+            border-radius: var(--radius-md); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s;
+        }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
 
+        /* Área Principal */
         .main-wrapper { flex: 1; display: none; flex-direction: column; overflow: hidden; position: relative; z-index: 1;}
         .top-navbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); z-index: 5; }
         body.dark-mode .top-navbar { backdrop-filter: blur(16px); }
+        
         .navbar-left { display: flex; align-items: center; gap: 12px; }
         .toggle-btn { background: var(--input-bg); border: 1px solid var(--panel-border); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
         
-        .user-profile { display: flex; align-items: center; gap: 8px; padding: 4px 12px; border-left: 1px solid var(--panel-border); margin-left: 8px; cursor: pointer; transition: 0.2s; border-radius: var(--radius-md); }
+        .user-profile { 
+            display: flex; align-items: center; gap: 8px; padding: 4px 12px; 
+            border-left: 1px solid var(--panel-border); margin-left: 8px;
+            cursor: pointer; transition: 0.2s; border-radius: var(--radius-md);
+        }
         .user-profile:hover { background: var(--input-bg); }
-        .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; overflow: hidden; border: 2px solid var(--accent); }
+        .avatar { 
+            width: 28px; height: 28px; border-radius: 50%; background: var(--accent); 
+            color: white; display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; font-size: 0.85rem; overflow: hidden; border: 2px solid var(--accent);
+        }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; }
+        /* Modal Perfil */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);
+            z-index: 100; display: none; align-items: center; justify-content: center;
+        }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { width: 100%; max-width: 400px; padding: 25px; }
 
         .content-container { flex: 1; padding: 15px 20px; overflow-y: auto; background: var(--bg-color); }
 
+        /* Controles do Dashboard */
         .controls-wrapper { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 5px;}
         .control-panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 10px 15px; flex: 1; min-width: 250px; display: flex; justify-content: space-between; align-items: center;}
         body.dark-mode .control-panel { backdrop-filter: blur(16px); }
         .controls-inputs { display: flex; gap: 8px; align-items: center; }
         .controls-inputs input { padding: 6px 8px; border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); border-radius: var(--radius-md); font-size: 0.8rem; outline: none; }
 
+        /* === GRID DE 9 COLUNAS EXATAS === */
         .kpi-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
         .kpi-card { padding: 8px 6px; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; justify-content: center; }
         .kpi-card:hover { transform: translateY(-2px); }
@@ -145,9 +178,11 @@
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: var(--text-main); }
         .kpi-card.expanded .kpi-details { display: block; animation: fadeIn 0.3s ease; }
 
+        /* === 4 GRÁFICOS EM TELA (2x2) === */
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
         .chart-container { position: relative; height: 160px; width: 100%; margin-top: 5px;}
 
+        /* Dropdown Histórico */
         .history-container { margin-top: 5px; flex: 1; display: flex; flex-direction: column; }
         .history-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: var(--text-muted); transition: color 0.2s; padding-bottom: 5px; }
         .history-header:hover { color: var(--text-main); }
@@ -157,6 +192,7 @@
         .history-container.expanded .fa-chevron-down { transform: rotate(180deg); }
         .fa-chevron-down { transition: transform 0.3s ease; }
 
+        /* Tabelas */
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--panel-border); }
         th { background: var(--input-bg); color: var(--text-muted); font-weight: 500; }
@@ -168,7 +204,9 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
-<body class="dark-mode"> <div id="login-wrapper">
+<body class="dark-mode"> 
+
+    <div id="login-wrapper">
         <div class="login-box card">
             <h1><i class="fas fa-chart-pie"></i> BI Delivery</h1>
             <p>Acesse o seu SaaS Financeiro na nuvem</p>
@@ -194,7 +232,7 @@
         </div>
     </div>
 
-    <div class="sidebar" id="sidebar" style="display: none;">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <i class="fas fa-chart-pie"></i>
             <span>BI Delivery</span>
@@ -227,7 +265,6 @@
         </div>
 
         <div class="content-container" id="pdfContent">
-            
             <div id="view-dashboard" class="view-section active">
                 <div class="controls-wrapper" data-html2canvas-ignore="true">
                     <div class="control-panel">
@@ -394,7 +431,7 @@
 
     <script>
         // ==============================================================
-        // 1. CONFIGURAÇÃO DO FIREBASE (COLE SUAS CHAVES AQUI)
+        // 1. CONFIGURAÇÃO DO FIREBASE
         // ==============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyChRVEv2hHqryfZdReGN8FeZYpCe5ANZ1Y",
@@ -405,7 +442,7 @@
             appId: "1:636646418661:web:b23dd811167221849ecc0c"
         };
 
-        // Inicializa Firebase
+        // Inicializa o Firebase com a versão de Compatibilidade (v8)
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -836,7 +873,7 @@
         }
 
         // ==============================================================
-        // 12. EXPORTAÇÃO
+        // 10. EXPORTAÇÃO
         // ==============================================================
         function gerarExcel() {
             if (bdVendas.length === 0 && bdDespesas.length === 0 && bdReceitasAvulsas.length === 0) return alert("Não existem dados.");
@@ -859,4 +896,4 @@
         }
     </script>
 </body>
-</html>	
+</html>

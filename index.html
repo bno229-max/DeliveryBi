@@ -36,23 +36,27 @@
             background-image: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.04), transparent 30%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.04), transparent 30%);
             z-index: 0; pointer-events: none;
         }
+        
         .view-section { display: none; flex-direction: column; gap: 10px; animation: fadeIn 0.3s ease; height: 100%;}
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
         .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 12px 15px; box-shadow: var(--shadow-md); position: relative; z-index: 1; }
         body.dark-mode .card { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        
         .btn { padding: 8px 12px; border-radius: var(--radius-md); border: none; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
         .btn-primary { background: var(--accent); color: #fff; } .btn-primary:hover { background: var(--accent-hover); }
         .btn-outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
         .btn-outline:hover { background: var(--input-bg); border-color: var(--accent); }
+        
         #login-wrapper, #block-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: var(--bg-color); z-index: 1000; }
         .login-box { width: 100%; max-width: 400px; padding: 30px; text-align: center; }
-        .login-box h1 { margin-bottom: 5px; color: var(--accent); font-size: 1.8rem; }
+        .login-box h1 { margin-bottom: 5px; color: var(--accent); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .login-error { color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none; }
         
-        .sidebar { width: 240px; min-width: 240px; height: 100%; padding: 15px 10px; border-right: 1px solid var(--panel-border); background: var(--panel-bg); z-index: 10; transition: all 0.3s ease; display: flex; flex-direction: column; overflow-y: auto;}
+        .sidebar { width: 240px; min-width: 240px; height: 100%; padding: 15px 10px 0 10px; border-right: 1px solid var(--panel-border); background: var(--panel-bg); z-index: 10; transition: all 0.3s ease; display: flex; flex-direction: column; overflow-y: auto;}
         body.dark-mode .sidebar { backdrop-filter: blur(20px); }
-        .sidebar.collapsed { width: 60px; min-width: 60px; padding: 15px 5px; }
+        .sidebar.collapsed { width: 60px; min-width: 60px; padding: 15px 5px 0 5px; }
         .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 20px; font-weight: 700; font-size: 1.1rem; color: var(--accent); white-space: nowrap; overflow: hidden;}
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 6px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); transition: 0.2s; white-space: nowrap; overflow: hidden; font-size: 0.85rem; }
         .nav-item:hover { background: var(--input-bg); color: var(--accent); }
@@ -60,6 +64,10 @@
         .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
         .sidebar.collapsed .nav-item span { display: none; }
         
+        /* FOOTER DE ASSINATURA */
+        #sidebar-footer { margin-top: auto; padding: 15px 5px; text-align: center; border-top: 1px solid var(--panel-border); transition: opacity 0.2s; }
+        .sidebar.collapsed #sidebar-footer { opacity: 0; pointer-events: none; padding: 0; height: 0; overflow: hidden; border: none; }
+
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
         .form-group { margin-bottom: 12px; text-align: left;}
         .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
@@ -80,28 +88,40 @@
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { width: 100%; max-width: 400px; padding: 25px; }
         
-        .content-container { flex: 1; padding: 15px 20px; overflow-y: auto; background: var(--bg-color); }
-        
-        .kpi-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
-        .kpi-card { padding: 8px 6px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: transform 0.2s; }
+        /* Ajuste do flex para a tela One-Page no Dashboard */
+        .content-container { flex: 1; padding: 15px 20px; overflow-y: auto; background: var(--bg-color); display: flex; flex-direction: column; }
+        #view-dashboard { flex: 1; display: none; flex-direction: column; min-height: 0; }
+        #view-dashboard.active { display: flex; }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 8px; flex-shrink: 0; }
+        .kpi-card { padding: 10px 8px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: transform 0.2s; }
         .kpi-card:hover { transform: translateY(-2px); }
-        .kpi-card h3 { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
-        .kpi-card .value { font-size: 1.05rem; font-weight: 700; margin: 4px 0; }
+        .kpi-card h3 { font-size: 0.60rem; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
+        .kpi-card .value { font-size: 1.15rem; font-weight: 700; margin: 4px 0; }
         .kpi-card .sub-value { font-size: 0.55rem; color: var(--text-muted); }
+        
         .kpi-details { display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--panel-border); font-size: 0.55rem; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: var(--text-main); }
         .kpi-card.expanded .kpi-details { display: block; animation: fadeIn 0.3s ease; }
         .kpi-card.expanded .fa-chevron-down { transform: rotate(180deg); }
         
-        /* CLASSES EXCLUSIVAS DE CORES PARA OS INDICADORES */
         .text-azul { color: #3b82f6; }
         .text-verde { color: #10b981; }
         .text-vermelho { color: #ef4444; }
         .text-branco { color: #ffffff; }
         body:not(.dark-mode) .text-branco { color: #1e293b; }
 
-        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .chart-container { position: relative; height: 160px; width: 100%; margin-top: 5px;}
+        /* Expansão e distribuição One-Page dos Gráficos */
+        .charts-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; margin-top: 10px; min-height: 0; overflow: hidden; }
+        .charts-grid .card { display: flex; flex-direction: column; height: 100%; padding: 15px; margin: 0; min-height: 0; }
+        .chart-container { flex: 1; position: relative; width: 100%; height: 100%; margin-top: 8px; min-height: 0;}
+
+        @media (max-width: 1024px) {
+            .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; grid-template-rows: auto; overflow: visible;}
+            .charts-grid .card { min-height: 250px; }
+            #view-dashboard { height: auto; flex: none; }
+        }
 
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--panel-border); }
@@ -113,6 +133,7 @@
 </head>
 <body class="dark-mode">
 
+    <!-- TELA DE BLOQUEIO -->
     <div id="block-wrapper" style="display: none;">
         <div class="login-box card" style="border-top: 4px solid #ef4444;">
             <h1 style="color: #ef4444;"><i class="fas fa-lock"></i> Acesso Suspenso</h1>
@@ -126,6 +147,7 @@
         </div>
     </div>
 
+    <!-- TELA DE LOGIN -->
     <div id="login-wrapper">
         <div class="login-box card">
             <h1><i class="fas fa-chart-pie"></i> Delivery BI</h1>
@@ -143,6 +165,7 @@
         </div>
     </div>
 
+    <!-- SIDEBAR COM FOOTER DE ASSINATURA -->
     <div class="sidebar" id="sidebar" style="display: none;">
         <div class="sidebar-logo"><i class="fas fa-chart-pie"></i><span>Delivery BI</span></div>
         <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i><span>Visão Geral</span></div>
@@ -151,11 +174,15 @@
         <div class="nav-item" onclick="switchTab('receitas', this)"><i class="fas fa-hand-holding-usd"></i><span>Receitas Avulsas</span></div>
         <div class="nav-item" onclick="switchTab('produtos', this)"><i class="fas fa-box-open"></i><span>Cadastrar Produtos</span></div>
         <div class="nav-item" onclick="switchTab('motoboy', this)"><i class="fas fa-helmet-safety"></i><span>Pagamento Motoboy</span></div>
-        <div class="nav-item" onclick="switchTab('precificacao', this)"><i class="fas fa-calculator"></i><span>Simulação de Preço</span></div>
+        <div class="nav-item" onclick="switchTab('precificacao', this)"><i class="fas fa-calculator"></i><span>Simulador de Preço</span></div>
         <div class="nav-item" onclick="switchTab('inventario', this)"><i class="fas fa-clipboard-check"></i><span>Inventário</span></div>
         <div class="nav-item" id="nav-admin" style="display: none; background: rgba(245, 158, 11, 0.1); color: #f59e0b;" onclick="switchTab('admin', this)"><i class="fas fa-user-shield"></i><span>Gestão SaaS Admin</span></div>
+        
+        <!-- Status de Assinatura -->
+        <div id="sidebar-footer"></div>
     </div>
 
+    <!-- MAIN APP -->
     <div class="main-wrapper" id="mainWrapper">
         <div class="top-navbar">
             <div class="navbar-left">
@@ -173,8 +200,9 @@
 
         <div class="content-container" id="pdfContent">
             
+            <!-- ABA 1: DASHBOARD -->
             <div id="view-dashboard" class="view-section active">
-                <div class="card" style="display: flex; gap: 10px; align-items: center; justify-content: center; padding: 10px 15px; margin-bottom: 5px;">
+                <div class="card" style="display: flex; gap: 10px; align-items: center; justify-content: center; padding: 10px 15px; margin-bottom: 5px; flex-shrink: 0;">
                     <span style="font-weight: 600; font-size: 0.85rem;"><i class="fas fa-filter text-accent"></i> Período Analisado</span>
                     <input type="date" id="filterStart" onchange="atualizarDashboard()" style="background:var(--input-bg); border:1px solid var(--panel-border); border-radius:var(--radius-md); padding:4px 8px; color:var(--text-main);">
                     <span style="color: var(--text-muted); font-size: 0.8rem;">até</span>
@@ -184,6 +212,7 @@
                     <button class="btn btn-outline" onclick="gerarExcel()" style="padding: 4px 8px;" title="Exportar Planilha Excel"><i class="fas fa-file-excel" style="color: #10b981;"></i> Excel</button>
                 </div>
 
+                <!-- CARDS COM CORES PADRONIZADAS E AUMENTO DE ALTURA -->
                 <div class="kpi-grid">
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Faturamento <i class="fas fa-chevron-down"></i></h3><div class="value text-azul" id="kpiFaturamento">R$ 0,00</div><div class="sub-value">Bruto Total</div><div class="kpi-details" id="detFaturamento"></div></div>
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Receita Líq. <i class="fas fa-chevron-down"></i></h3><div class="value text-verde" id="kpiReceita">R$ 0,00</div><div class="sub-value">Global</div><div class="kpi-details" id="detReceita"></div></div>
@@ -196,6 +225,7 @@
                     <div class="card kpi-card"><h3>Estoque Atual</h3><div class="value text-branco" id="kpiEstoque">R$ 0,00</div><div class="sub-value">Valor de Custo</div></div>
                 </div>
 
+                <!-- GRÁFICOS EXPANSIVOS ONE-PAGE -->
                 <div class="charts-grid">
                     <div class="card"><h3>Faturamento vs Líquido</h3><div class="chart-container"><canvas id="barChart"></canvas></div></div>
                     <div class="card"><h3>Vendas por Dia da Semana</h3><div class="chart-container"><canvas id="diaSemanaChart"></canvas></div></div>
@@ -204,6 +234,7 @@
                 </div>
             </div>
 
+            <!-- ABA VENDAS -->
             <div id="view-vendas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-dollar-sign text-accent"></i> Lançamento de Vendas</h2>
@@ -247,6 +278,7 @@
                 </div>
             </div>
 
+            <!-- ABA DESPESAS -->
             <div id="view-despesas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-file-invoice-dollar text-accent"></i> Despesas Operacionais</h2>
@@ -291,6 +323,7 @@
                 </div>
             </div>
 
+            <!-- ABA RECEITAS EXTRAS -->
             <div id="view-receitas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-hand-holding-usd text-accent"></i> Receitas Avulsas</h2>
@@ -311,6 +344,7 @@
                 </div>
             </div>
 
+            <!-- ABA CADASTRAR PRODUTOS -->
             <div id="view-produtos" class="view-section">
                 <div class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-box-open text-accent"></i> Cadastrar Produtos e Estoque</h2>
@@ -324,6 +358,7 @@
                 </div>
             </div>
 
+            <!-- ABA PAGAMENTO MOTOBOY -->
             <div id="view-motoboy" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-helmet-safety text-accent"></i> Pagamento de Motoboys</h2>
@@ -356,6 +391,7 @@
                 </div>
             </div>
 
+            <!-- ABA SIMULAÇÃO DE PRECIFICAÇÃO -->
             <div id="view-precificacao" class="view-section">
                 <div class="card" style="max-width: 600px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-calculator text-accent"></i> Simulador de Precificação</h2>
@@ -373,6 +409,7 @@
                 </div>
             </div>
 
+            <!-- ABA INVENTÁRIO -->
             <div id="view-inventario" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; text-align: center;"><i class="fas fa-clipboard-check text-accent"></i> Inventário e Divergências</h2>
@@ -398,19 +435,23 @@
                 </div>
             </div>
 
+            <!-- ABA ADMIN -->
             <div id="view-admin" class="view-section">
-                <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
+                <div class="card" style="max-width: 1000px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; color:#f59e0b; text-align: center;"><i class="fas fa-user-shield"></i> Gestão SaaS Admin</h2>
-                    <table id="tableAdminUsuarios">
-                        <thead><tr><th>E-mail Corporativo</th><th>UID da Loja</th><th>Status</th><th>Ações de Acesso</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+                    <div style="overflow-x: auto;">
+                        <table id="tableAdminUsuarios">
+                            <thead><tr><th>E-mail Corporativo</th><th>UID da Loja</th><th>Status da Conta</th><th>Ações de Acesso</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
         </div> 
     </div>
 
+    <!-- MODAL PERFIL -->
     <div id="modalPerfil" class="modal-overlay">
         <div class="modal-content card">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-user-cog text-accent"></i> Configurações da Conta</h3>
@@ -425,6 +466,7 @@
         </div>
     </div>
 
+    <!-- MODAL INVENTÁRIO -->
     <div id="modalInventario" class="modal-overlay">
         <div class="modal-content card" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">Detalhes do Inventário</h3>
@@ -443,7 +485,7 @@
         let currentUser = null;
         let bdVendas = []; let bdDespesas = []; let bdReceitasAvulsas = []; let bdProdutos = [];
         let bdMotoboys = []; let bdInventarios = []; 
-        let perfilDados = { nome: 'Usuário', foto: '', statusAcesso: 'ativo' };
+        let perfilDados = { nome: 'Usuário', foto: '', statusAcesso: 'ativo', pagamentoEmDia: false };
         
         let produtosTempVenda = []; let graficosInstancias = {};
         let editandoIdVenda = null; let editandoIdDespesa = null; let editandoIdReceita = null; let editandoIdMotoboy = null;
@@ -455,11 +497,13 @@
         document.getElementById('dataReceitaAvulsa').valueAsDate = new Date();
         document.getElementById('dataMotoboy').valueAsDate = new Date();
 
+        function formatarMoeda(v) { const val = Number(v) || 0; return `R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; }
+
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 db.collection('usuarios').doc(user.uid).get().then(doc => { 
-                    if(!doc.exists) db.collection('usuarios').doc(user.uid).set({ email: user.email, nome: "Nova Loja Cadastrada", statusAcesso: "ativo" }); 
+                    if(!doc.exists) db.collection('usuarios').doc(user.uid).set({ email: user.email, nome: "Nova Loja Cadastrada", statusAcesso: "ativo", pagamentoEmDia: false }); 
                 });
                 db.collection('usuarios').doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
@@ -468,7 +512,7 @@
                             document.getElementById('block-wrapper').style.display = 'flex'; document.getElementById('login-wrapper').style.display = 'none'; document.getElementById('sidebar').style.display = 'none'; document.getElementById('mainWrapper').style.display = 'none';
                         } else {
                             document.getElementById('block-wrapper').style.display = 'none'; document.getElementById('login-wrapper').style.display = 'none'; document.getElementById('sidebar').style.display = 'flex'; document.getElementById('mainWrapper').style.display = 'flex';
-                            renderizarPerfilUI(); carregarDadosDaNuvem();
+                            renderizarPerfilUI(); carregarDadosDaNuvem(); atualizarStatusAssinatura();
                         }
                     }
                 });
@@ -478,6 +522,29 @@
                 currentUser = null; document.getElementById('block-wrapper').style.display = 'none'; document.getElementById('login-wrapper').style.display = 'flex'; document.getElementById('sidebar').style.display = 'none'; document.getElementById('mainWrapper').style.display = 'none'; document.getElementById('nav-admin').style.display = 'none';
             }
         });
+
+        function atualizarStatusAssinatura() {
+            const footer = document.getElementById('sidebar-footer');
+            if(!footer || !currentUser || currentUser.email === MEU_EMAIL_ADMIN) {
+                if(footer) footer.innerHTML = '';
+                return;
+            }
+            
+            if(perfilDados.pagamentoEmDia === true) {
+                footer.innerHTML = `<div style="color: #10b981; font-weight: 600; font-size: 0.85rem;"><i class="fas fa-check-circle"></i> Acesso Pago</div>`;
+            } else {
+                const creationTime = new Date(currentUser.metadata.creationTime);
+                const diffTime = new Date() - creationTime;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const diasRestantes = 10 - diffDays;
+                
+                if(diasRestantes > 0) {
+                    footer.innerHTML = `<div style="color: var(--text-muted); font-size: 0.8rem;"><i class="fas fa-clock"></i> ${diasRestantes} dias de acesso grátis</div>`;
+                } else {
+                    footer.innerHTML = `<div style="color: #ef4444; font-weight: 600; font-size: 0.75rem; line-height: 1.4;"><i class="fas fa-exclamation-triangle"></i> Seu acesso será bloqueado em breve.<br>Efetue o pagamento para continuar acessando.</div>`;
+                }
+            }
+        }
 
         document.getElementById('formLogin').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('authEmail').value, document.getElementById('authPassword').value).catch(err => { document.getElementById('loginError').innerText = err.message; document.getElementById('loginError').style.display = 'block'; }); });
         function criarConta() { const email = document.getElementById('authEmail').value; const pass = document.getElementById('authPassword').value; if(!email || !pass) return alert("Preencha as credenciais."); auth.createUserWithEmailAndPassword(email, pass).then(cred => { alert("Conta SaaS criada e logada com sucesso!"); }).catch(err => { document.getElementById('loginError').innerText = err.message; document.getElementById('loginError').style.display = 'block'; }); }
@@ -502,9 +569,19 @@
 
         async function carregarListaUsuariosAdmin() {
             if(currentUser.email !== MEU_EMAIL_ADMIN) return;
-            try { const snapshot = await db.collection('usuarios').get(); const tbody = document.querySelector('#tableAdminUsuarios tbody'); tbody.innerHTML = ''; if(snapshot.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum cliente encontrado.</td></tr>`; return; } snapshot.forEach(doc => { const u = doc.data(); const corStatus = u.statusAcesso === 'ativo' ? '#10b981' : '#ef4444'; tbody.innerHTML += `<tr><td><b>${u.email}</b></td><td><small>${doc.id}</small></td><td style="color:${corStatus}; font-weight:700;">${u.statusAcesso ? u.statusAcesso.toUpperCase() : 'ATIVO'}</td><td><button class="btn btn-outline" style="padding:4px 8px; border-color:#10b981; color:#10b981;" onclick="alterarStatusConta('${doc.id}', 'ativo')"><i class="fas fa-check"></i> Ativar</button> <button class="btn btn-outline" style="padding:4px 8px; border-color:#ef4444; color:#ef4444;" onclick="alterarStatusConta('${doc.id}', 'bloqueado')"><i class="fas fa-ban"></i> Bloquear</button></td></tr>`; }); } catch(e) { document.querySelector('#tableAdminUsuarios tbody').innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erro de Permissão: Verifique as regras do Firebase.</td></tr>`; }
+            try { const snapshot = await db.collection('usuarios').get(); const tbody = document.querySelector('#tableAdminUsuarios tbody'); tbody.innerHTML = ''; if(snapshot.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum cliente encontrado.</td></tr>`; return; } 
+            snapshot.forEach(doc => { 
+                const u = doc.data(); 
+                const corStatus = u.statusAcesso === 'ativo' ? '#10b981' : '#ef4444'; 
+                const btnPgto = u.pagamentoEmDia 
+                    ? `<button class="btn btn-outline" style="padding:3px 6px; font-size:0.7rem; border-color:#f59e0b; color:#f59e0b; margin-top:4px;" onclick="alternarPagamentoConta('${doc.id}', false)"><i class="fas fa-times"></i> Tirar Pago</button>`
+                    : `<button class="btn btn-outline" style="padding:3px 6px; font-size:0.7rem; border-color:#3b82f6; color:#3b82f6; margin-top:4px;" onclick="alternarPagamentoConta('${doc.id}', true)"><i class="fas fa-dollar-sign"></i> Marcar Pago</button>`;
+
+                tbody.innerHTML += `<tr><td><b>${u.email}</b></td><td><small>${doc.id}</small></td><td style="color:${corStatus}; font-weight:700; font-size:0.8rem;">${u.statusAcesso ? u.statusAcesso.toUpperCase() : 'ATIVO'}<br><small style="color:${u.pagamentoEmDia ? '#10b981' : '#ef4444'};">${u.pagamentoEmDia ? 'Pagamento OK' : 'Pagamento Pendente'}</small></td><td><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn btn-outline" style="padding:3px 6px; font-size:0.7rem; border-color:#10b981; color:#10b981;" onclick="alterarStatusConta('${doc.id}', 'ativo')"><i class="fas fa-check"></i> Ativar</button> <button class="btn btn-outline" style="padding:3px 6px; font-size:0.7rem; border-color:#ef4444; color:#ef4444;" onclick="alterarStatusConta('${doc.id}', 'bloqueado')"><i class="fas fa-ban"></i> Bloquear</button><br>${btnPgto}</div></td></tr>`; 
+            }); } catch(e) { document.querySelector('#tableAdminUsuarios tbody').innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erro de Permissão: Verifique as regras do Firebase.</td></tr>`; }
         }
         function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status atualizado!'); carregarListaUsuariosAdmin(); }); }
+        function alternarPagamentoConta(uid, status) { db.collection('usuarios').doc(uid).update({ pagamentoEmDia: status }).then(() => { alert('Pagamento atualizado!'); carregarListaUsuariosAdmin(); }); }
 
         function cadastrarProdutoBase() { const n = document.getElementById('novoProdutoNome').value; const c = parseFloat(document.getElementById('novoProdutoCusto').value)||0; const q = parseInt(document.getElementById('novoProdutoQtd').value)||0; if(n) { db.collection('produtos').add({ nome:n, custo:c, estoque:q, userId: currentUser.uid }); document.getElementById('novoProdutoNome').value=''; document.getElementById('novoProdutoCusto').value=''; document.getElementById('novoProdutoQtd').value=''; } }
         function deletarProdutoBase(id) { if(confirm("Apagar produto?")) db.collection('produtos').doc(id).delete(); }
@@ -550,7 +627,7 @@
             const ord = [...bdMotoboys].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
             ord.forEach(m => {
                 const corStatus = m.status === 'Pago' ? '#10b981' : '#f59e0b'; const dataFormatada = m.data ? m.data.split('-').reverse().join('/') : '';
-                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><b>${m.nome}</b><br><small style="color:var(--text-muted)">${m.cpf || ''}</small></td><td>${m.qtdEntregas}</td><td><b>${formatarMoeda(m.total)}</b></td><td><span style="color: ${corStatus}; font-weight: bold; cursor: pointer;" onclick="alternarStatusMotoboy('${m.id}', '${m.status}')">${m.status}</span></td><td style="white-space: nowrap;"><button class="btn btn-outline" style="padding: 2px 6px; font-size:0.75rem;" onclick="editarMotoboy('${m.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding: 2px 6px; color: red; border-color: red; font-size:0.75rem;" onclick="deletarMotoboy('${m.id}')"><i class="fas fa-trash"></i></button> <button class="btn btn-primary" style="padding: 2px 6px; font-size:0.75rem;" onclick="gerarPDFMotoboy('${m.id}')"><i class="fas fa-file-pdf"></i> PDF</button></td></tr>`;
+                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><b>${m.nome}</b><br><small style="color:var(--text-muted)">${m.cpf || ''}</small></td><td>${m.qtdEntregas}</td><td><b>${formatarMoeda(m.total)}</b></td><td><span style="color: ${corStatus}; font-weight: bold; cursor: pointer;" onclick="alternarStatusMotoboy('${m.id}', '${m.status}')">${m.status}</span></td><td style="white-space: nowrap;"><button class="btn btn-outline" style="padding: 2px 6px; font-size:0.75rem;" onclick="editarMotoboy('${m.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding: 2px 6px; color: red; border-color: red; font-size:0.75rem;" onclick="deletarMotoboy('${m.id}')"><i class="fas fa-trash"></i></button> <button class="btn btn-primary" style="padding: 2px 6px; font-size:0.75rem;" onclick="generarPDFMotoboy('${m.id}')"><i class="fas fa-file-pdf"></i> PDF</button></td></tr>`;
             });
         }
 
@@ -586,7 +663,7 @@
             const ord = [...bdInventarios].sort((a,b) => b.dataHora.localeCompare(a.dataHora));
             ord.forEach(inv => {
                 const cor = inv.divergenciaTotalR < 0 ? '#ef4444' : (inv.divergenciaTotalR > 0 ? '#10b981' : 'var(--text-muted)'); const sinal = inv.divergenciaTotalR > 0 ? '+' : '';
-                tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} ${formatarMoeda(inv.divergenciaTotalR)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td><td><button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="generarPDFInventario('${inv.id}')"><i class="fas fa-file-pdf"></i> Gerar Relatório</button></td></tr>`;
+                tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} ${formatarMoeda(inv.divergenciaTotalR)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td><td><button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="gerarPDFInventario('${inv.id}')"><i class="fas fa-file-pdf"></i> Gerar Relatório</button></td></tr>`;
             });
         }
 
@@ -628,8 +705,6 @@
             let dadosPorCanal = { 'iFood': {fat:0, rec:0, ped:0}, 'Keeta': {fat:0, rec:0, ped:0}, '99 Foods': {fat:0, rec:0, ped:0}, 'WhatsApp': {fat:0, rec:0, ped:0}, 'Outras Receitas': {fat:0, rec:0, ped:0} };
             let dadosPorDia = { 'Segunda-feira':0, 'Terça-feira':0, 'Quarta-feira':0, 'Quinta-feira':0, 'Sexta-feira':0, 'Sábado':0, 'Domingo':0 };
             let contagemProdutos = {};
-
-            const tbodyVDash = document.querySelector('#historyTableDashboard tbody'); if(tbodyVDash) tbodyVDash.innerHTML = '';
 
             vFiltradas.forEach(v => {
                 totalFatVendas += v.faturamento || 0; totalRecVendas += v.receitaLiquida || 0; totalPed += v.qtdPedidos || 0;

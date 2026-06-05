@@ -86,13 +86,20 @@
         .kpi-card { padding: 8px 6px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: transform 0.2s; }
         .kpi-card:hover { transform: translateY(-2px); }
         .kpi-card h3 { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
-        .kpi-card .value { font-size: 1.05rem; font-weight: 700; margin: 4px 0; color: var(--text-main); }
+        .kpi-card .value { font-size: 1.05rem; font-weight: 700; margin: 4px 0; }
         .kpi-card .sub-value { font-size: 0.55rem; color: var(--text-muted); }
         .kpi-details { display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--panel-border); font-size: 0.55rem; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: var(--text-main); }
         .kpi-card.expanded .kpi-details { display: block; animation: fadeIn 0.3s ease; }
         .kpi-card.expanded .fa-chevron-down { transform: rotate(180deg); }
         
+        /* CLASSES EXCLUSIVAS DE CORES PARA OS INDICADORES */
+        .text-azul { color: #3b82f6; }
+        .text-verde { color: #10b981; }
+        .text-vermelho { color: #ef4444; }
+        .text-branco { color: #ffffff; }
+        body:not(.dark-mode) .text-branco { color: #1e293b; }
+
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
         .chart-container { position: relative; height: 160px; width: 100%; margin-top: 5px;}
 
@@ -173,18 +180,20 @@
                     <span style="color: var(--text-muted); font-size: 0.8rem;">até</span>
                     <input type="date" id="filterEnd" onchange="atualizarDashboard()" style="background:var(--input-bg); border:1px solid var(--panel-border); border-radius:var(--radius-md); padding:4px 8px; color:var(--text-main);">
                     <button class="btn btn-outline" style="padding: 4px 8px;" onclick="limparFiltro()"><i class="fas fa-eraser"></i></button>
+                    <button class="btn btn-outline" onclick="gerarPDF()" style="padding: 4px 8px;" title="Exportar Tela em PDF"><i class="fas fa-file-pdf" style="color: #ef4444;"></i> PDF</button>
+                    <button class="btn btn-outline" onclick="gerarExcel()" style="padding: 4px 8px;" title="Exportar Planilha Excel"><i class="fas fa-file-excel" style="color: #10b981;"></i> Excel</button>
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Faturamento <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiFaturamento" style="color: var(--accent);">R$ 0,00</div><div class="sub-value">Bruto Total</div><div class="kpi-details" id="detFaturamento"></div></div>
-                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Receita Líq. <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiReceita" style="color: #10b981;">R$ 0,00</div><div class="sub-value">Global</div><div class="kpi-details" id="detReceita"></div></div>
-                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Taxa Média <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiTaxa" style="color: #ef4444;">0%</div><div class="sub-value">Retenção Plataf.</div><div class="kpi-details" id="detTaxa"></div></div>
-                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Ticket Médio <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiTicket">R$ 0,00</div><div class="sub-value">Por Pedido</div><div class="kpi-details" id="detTicket"></div></div>
-                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Pedidos <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiPedidos">0</div><div class="sub-value">Volume Total</div><div class="kpi-details" id="detPedidos"></div></div>
-                    <div class="card kpi-card"><h3>Despesas</h3><div class="value" id="kpiDespesas" style="color: #ef4444;">R$ 0,00</div><div class="sub-value">Operacionais</div></div>
-                    <div class="card kpi-card" style="border-bottom: 2px solid var(--accent);"><h3>Lucro Líquido</h3><div class="value" id="kpiLucroLiq" style="color: #10b981;">R$ 0,00</div><div class="sub-value">Receita - Desp.</div></div>
-                    <div class="card kpi-card" style="border-bottom: 2px solid var(--accent);"><h3>Margem Líq.</h3><div class="value" id="kpiMargem">0%</div><div class="sub-value">Sobre Faturam.</div></div>
-                    <div class="card kpi-card" style="border-bottom: 2px solid #8b5cf6;"><h3>Estoque Atual</h3><div class="value" id="kpiEstoque">R$ 0,00</div><div class="sub-value">Valor de Custo</div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Faturamento <i class="fas fa-chevron-down"></i></h3><div class="value text-azul" id="kpiFaturamento">R$ 0,00</div><div class="sub-value">Bruto Total</div><div class="kpi-details" id="detFaturamento"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Receita Líq. <i class="fas fa-chevron-down"></i></h3><div class="value text-verde" id="kpiReceita">R$ 0,00</div><div class="sub-value">Global</div><div class="kpi-details" id="detReceita"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Taxa Média <i class="fas fa-chevron-down"></i></h3><div class="value text-vermelho" id="kpiTaxa">0%</div><div class="sub-value">Retenção Plataf.</div><div class="kpi-details" id="detTaxa"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Ticket Médio <i class="fas fa-chevron-down"></i></h3><div class="value text-branco" id="kpiTicket">R$ 0,00</div><div class="sub-value">Por Pedido</div><div class="kpi-details" id="detTicket"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Pedidos <i class="fas fa-chevron-down"></i></h3><div class="value text-branco" id="kpiPedidos">0</div><div class="sub-value">Volume Total</div><div class="kpi-details" id="detPedidos"></div></div>
+                    <div class="card kpi-card"><h3>Despesas</h3><div class="value text-vermelho" id="kpiDespesas">R$ 0,00</div><div class="sub-value">Operacionais</div></div>
+                    <div class="card kpi-card"><h3>Lucro Líquido</h3><div class="value text-verde" id="kpiLucroLiq">R$ 0,00</div><div class="sub-value">Receita - Desp.</div></div>
+                    <div class="card kpi-card"><h3>Margem Líq.</h3><div class="value text-branco" id="kpiMargem">0%</div><div class="sub-value">Sobre Faturam.</div></div>
+                    <div class="card kpi-card"><h3>Estoque Atual</h3><div class="value text-branco" id="kpiEstoque">R$ 0,00</div><div class="sub-value">Valor de Custo</div></div>
                 </div>
 
                 <div class="charts-grid">
@@ -208,7 +217,7 @@
                             </div>
                             <div class="form-group"><label>Canal</label>
                                 <select id="canalVenda" required>
-                                    <option value="iFood">iFood</option><option value="Keeta">Keeta</option><option value="99 Foods">99 Foods</option><option value="Whatsapp">Whatsapp</option><option value="Outras Receitas">Outras Receitas</option>
+                                    <option value="iFood">iFood</option><option value="Keeta">Keeta</option><option value="99 Foods">99 Foods</option><option value="WhatsApp">WhatsApp</option><option value="Outras Receitas">Outras Receitas</option>
                                 </select>
                             </div>
                             <div class="form-group"><label>Qtd. Pedidos</label><input type="number" id="qtdPedidosVenda" required min="1"></div>
@@ -297,7 +306,7 @@
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
                     <h3 style="font-size: 0.9rem; margin-bottom: 10px; text-align: center;">Histórico de Receitas Extras</h3>
                     <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
-                        <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
+                        <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr></thead><tbody></tbody></table>
                     </div>
                 </div>
             </div>
@@ -439,14 +448,12 @@
         let produtosTempVenda = []; let graficosInstancias = {};
         let editandoIdVenda = null; let editandoIdDespesa = null; let editandoIdReceita = null; let editandoIdMotoboy = null;
 
-        const coresCanais = { 'iFood': '#ef4444', 'Keeta': '#10b981', '99 Foods': '#f59e0b', 'Whatsapp': '#25D366', 'Outras Receitas': '#64748b' };
+        const coresCanais = { 'iFood': '#ef4444', 'Keeta': '#10b981', '99 Foods': '#f59e0b', 'WhatsApp': '#25D366', 'Outras Receitas': '#64748b' };
 
         document.getElementById('dataVenda').valueAsDate = new Date();
         document.getElementById('dataDespesa').valueAsDate = new Date();
         document.getElementById('dataReceitaAvulsa').valueAsDate = new Date();
         document.getElementById('dataMotoboy').valueAsDate = new Date();
-
-        function formatarMoeda(v) { const val = Number(v) || 0; return `R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; }
 
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -454,7 +461,6 @@
                 db.collection('usuarios').doc(user.uid).get().then(doc => { 
                     if(!doc.exists) db.collection('usuarios').doc(user.uid).set({ email: user.email, nome: "Nova Loja Cadastrada", statusAcesso: "ativo" }); 
                 });
-                
                 db.collection('usuarios').doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
                         perfilDados = doc.data();
@@ -466,13 +472,7 @@
                         }
                     }
                 });
-
-                if (user.email === MEU_EMAIL_ADMIN) {
-                    document.getElementById('nav-admin').style.display = 'flex';
-                } else {
-                    document.getElementById('nav-admin').style.display = 'none';
-                    if(document.getElementById('view-admin').classList.contains('active')) document.querySelectorAll('.nav-item')[0].click();
-                }
+                if (user.email === MEU_EMAIL_ADMIN) { document.getElementById('nav-admin').style.display = 'flex'; } else { document.getElementById('nav-admin').style.display = 'none'; if(document.getElementById('view-admin').classList.contains('active')) document.querySelectorAll('.nav-item')[0].click(); }
                 applyTheme();
             } else {
                 currentUser = null; document.getElementById('block-wrapper').style.display = 'none'; document.getElementById('login-wrapper').style.display = 'flex'; document.getElementById('sidebar').style.display = 'none'; document.getElementById('mainWrapper').style.display = 'none'; document.getElementById('nav-admin').style.display = 'none';
@@ -504,7 +504,7 @@
             if(currentUser.email !== MEU_EMAIL_ADMIN) return;
             try { const snapshot = await db.collection('usuarios').get(); const tbody = document.querySelector('#tableAdminUsuarios tbody'); tbody.innerHTML = ''; if(snapshot.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum cliente encontrado.</td></tr>`; return; } snapshot.forEach(doc => { const u = doc.data(); const corStatus = u.statusAcesso === 'ativo' ? '#10b981' : '#ef4444'; tbody.innerHTML += `<tr><td><b>${u.email}</b></td><td><small>${doc.id}</small></td><td style="color:${corStatus}; font-weight:700;">${u.statusAcesso ? u.statusAcesso.toUpperCase() : 'ATIVO'}</td><td><button class="btn btn-outline" style="padding:4px 8px; border-color:#10b981; color:#10b981;" onclick="alterarStatusConta('${doc.id}', 'ativo')"><i class="fas fa-check"></i> Ativar</button> <button class="btn btn-outline" style="padding:4px 8px; border-color:#ef4444; color:#ef4444;" onclick="alterarStatusConta('${doc.id}', 'bloqueado')"><i class="fas fa-ban"></i> Bloquear</button></td></tr>`; }); } catch(e) { document.querySelector('#tableAdminUsuarios tbody').innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erro de Permissão: Verifique as regras do Firebase.</td></tr>`; }
         }
-        function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status updated!'); carregarListaUsuariosAdmin(); }); }
+        function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status atualizado!'); carregarListaUsuariosAdmin(); }); }
 
         function cadastrarProdutoBase() { const n = document.getElementById('novoProdutoNome').value; const c = parseFloat(document.getElementById('novoProdutoCusto').value)||0; const q = parseInt(document.getElementById('novoProdutoQtd').value)||0; if(n) { db.collection('produtos').add({ nome:n, custo:c, estoque:q, userId: currentUser.uid }); document.getElementById('novoProdutoNome').value=''; document.getElementById('novoProdutoCusto').value=''; document.getElementById('novoProdutoQtd').value=''; } }
         function deletarProdutoBase(id) { if(confirm("Apagar produto?")) db.collection('produtos').doc(id).delete(); }
@@ -550,7 +550,7 @@
             const ord = [...bdMotoboys].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
             ord.forEach(m => {
                 const corStatus = m.status === 'Pago' ? '#10b981' : '#f59e0b'; const dataFormatada = m.data ? m.data.split('-').reverse().join('/') : '';
-                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><b>${m.nome}</b><br><small style="color:var(--text-muted)">${m.cpf || ''}</small></td><td>${m.qtdEntregas}</td><td><b>${formatarMoeda(m.total)}</b></td><td><span style="color: ${corStatus}; font-weight: bold; cursor: pointer;" onclick="alternarStatusMotoboy('${m.id}', '${m.status}')">${m.status}</span></td><td style="white-space: nowrap;"><button class="btn btn-outline" style="padding: 2px 6px; font-size:0.75rem;" onclick="editarMotoboy('${m.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding: 2px 6px; color: red; border-color: red; font-size:0.75rem;" onclick="deletarMotoboy('${m.id}')"><i class="fas fa-trash"></i></button> <button class="btn btn-primary" style="padding: 2px 6px; font-size:0.75rem;" onclick="generarPDFMotoboy('${m.id}')"><i class="fas fa-file-pdf"></i> PDF</button></td></tr>`;
+                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><b>${m.nome}</b><br><small style="color:var(--text-muted)">${m.cpf || ''}</small></td><td>${m.qtdEntregas}</td><td><b>${formatarMoeda(m.total)}</b></td><td><span style="color: ${corStatus}; font-weight: bold; cursor: pointer;" onclick="alternarStatusMotoboy('${m.id}', '${m.status}')">${m.status}</span></td><td style="white-space: nowrap;"><button class="btn btn-outline" style="padding: 2px 6px; font-size:0.75rem;" onclick="editarMotoboy('${m.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding: 2px 6px; color: red; border-color: red; font-size:0.75rem;" onclick="deletarMotoboy('${m.id}')"><i class="fas fa-trash"></i></button> <button class="btn btn-primary" style="padding: 2px 6px; font-size:0.75rem;" onclick="gerarPDFMotoboy('${m.id}')"><i class="fas fa-file-pdf"></i> PDF</button></td></tr>`;
             });
         }
 
@@ -586,7 +586,7 @@
             const ord = [...bdInventarios].sort((a,b) => b.dataHora.localeCompare(a.dataHora));
             ord.forEach(inv => {
                 const cor = inv.divergenciaTotalR < 0 ? '#ef4444' : (inv.divergenciaTotalR > 0 ? '#10b981' : 'var(--text-muted)'); const sinal = inv.divergenciaTotalR > 0 ? '+' : '';
-                tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} ${formatarMoeda(inv.divergenciaTotalR)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td><td><button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="gerarPDFInventario('${inv.id}')"><i class="fas fa-file-pdf"></i> Gerar Relatório</button></td></tr>`;
+                tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} ${formatarMoeda(inv.divergenciaTotalR)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td><td><button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="generarPDFInventario('${inv.id}')"><i class="fas fa-file-pdf"></i> Gerar Relatório</button></td></tr>`;
             });
         }
 
@@ -625,13 +625,11 @@
             let rFiltradas = bdReceitasAvulsas.filter(r => (!fStart || r.data >= fStart) && (!fEnd || r.data <= fEnd));
             
             let totalFatVendas = 0, totalRecVendas = 0, totalPed = 0, totalDesp = 0, totalRecAvulsas = 0;
-            let dadosPorCanal = { 'iFood': {fat:0, rec:0, ped:0}, 'Keeta': {fat:0, rec:0, ped:0}, '99 Foods': {fat:0, rec:0, ped:0}, 'Whatsapp': {fat:0, rec:0, ped:0}, 'Outras Receitas': {fat:0, rec:0, ped:0} };
+            let dadosPorCanal = { 'iFood': {fat:0, rec:0, ped:0}, 'Keeta': {fat:0, rec:0, ped:0}, '99 Foods': {fat:0, rec:0, ped:0}, 'WhatsApp': {fat:0, rec:0, ped:0}, 'Outras Receitas': {fat:0, rec:0, ped:0} };
             let dadosPorDia = { 'Segunda-feira':0, 'Terça-feira':0, 'Quarta-feira':0, 'Quinta-feira':0, 'Sexta-feira':0, 'Sábado':0, 'Domingo':0 };
             let contagemProdutos = {};
 
-            const tbodyVDash = document.querySelector('#historyTableDashboard tbody'); tbodyVDash.innerHTML = '';
-            const ordV = [...vFiltradas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5); 
-            ordV.forEach(v => { const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : ''; tbodyVDash.innerHTML += `<tr><td>${dataFormatada}</td><td><span style="color:${coresCanais[v.canal]}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td><td>${v.qtdPedidos}</td></tr>`; });
+            const tbodyVDash = document.querySelector('#historyTableDashboard tbody'); if(tbodyVDash) tbodyVDash.innerHTML = '';
 
             vFiltradas.forEach(v => {
                 totalFatVendas += v.faturamento || 0; totalRecVendas += v.receitaLiquida || 0; totalPed += v.qtdPedidos || 0;

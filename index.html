@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI Delivery | SaaS Financeiro</title>
+    <title>Delivery BI | SaaS Financeiro</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -49,6 +49,7 @@
         .login-box { width: 100%; max-width: 400px; padding: 30px; text-align: center; }
         .login-box h1 { margin-bottom: 5px; color: var(--accent); font-size: 1.8rem; }
         .login-error { color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none; }
+        
         .sidebar { width: 240px; min-width: 240px; height: 100%; padding: 15px 10px; border-right: 1px solid var(--panel-border); background: var(--panel-bg); z-index: 10; transition: all 0.3s ease; display: flex; flex-direction: column; overflow-y: auto;}
         body.dark-mode .sidebar { backdrop-filter: blur(20px); }
         .sidebar.collapsed { width: 60px; min-width: 60px; padding: 15px 5px; }
@@ -58,30 +59,42 @@
         .nav-item.active { background: var(--accent); color: white; box-shadow: var(--shadow-sm); }
         .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
         .sidebar.collapsed .nav-item span { display: none; }
+        
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
         .form-group { margin-bottom: 12px; text-align: left;}
         .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
         .form-group input, .form-group select { width: 100%; padding: 10px; background: var(--input-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.9rem; outline: none; transition: 0.2s; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+        
         .main-wrapper { flex: 1; display: none; flex-direction: column; overflow: hidden; position: relative; z-index: 1;}
         .top-navbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); z-index: 5; }
         body.dark-mode .top-navbar { backdrop-filter: blur(16px); }
         .toggle-btn { background: var(--input-bg); border: 1px solid var(--panel-border); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .user-profile { display: flex; align-items: center; gap: 8px; padding: 4px 12px; border-left: 1px solid var(--panel-border); margin-left: 8px; cursor: pointer; transition: 0.2s; border-radius: var(--radius-md); }
         .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; overflow: hidden; }
+        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content { width: 100%; max-width: 400px; padding: 25px; }
+        
         .content-container { flex: 1; padding: 15px 20px; overflow-y: auto; background: var(--bg-color); }
         
+        /* RESTAURAÇÃO DO VISUAL DOS KPIS (SANFONA) */
         .kpi-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
-        .kpi-card { padding: 8px 6px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
-        .kpi-card h3 { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase;}
+        .kpi-card { padding: 8px 6px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: transform 0.2s; }
+        .kpi-card:hover { transform: translateY(-2px); }
+        .kpi-card h3 { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
         .kpi-card .value { font-size: 1.05rem; font-weight: 700; margin: 4px 0; color: var(--text-main); }
         .kpi-card .sub-value { font-size: 0.55rem; color: var(--text-muted); }
+        .kpi-details { display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--panel-border); font-size: 0.55rem; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: var(--text-main); }
+        .kpi-card.expanded .kpi-details { display: block; animation: fadeIn 0.3s ease; }
+        .kpi-card.expanded .fa-chevron-down { transform: rotate(180deg); }
+        
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
         .chart-container { position: relative; height: 160px; width: 100%; margin-top: 5px;}
         
+        /* RESTAURAÇÃO DO HISTÓRICO NO DASHBOARD */
         .history-container { margin-top: 5px; flex: 1; display: flex; flex-direction: column; }
         .history-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: var(--text-muted); transition: color 0.2s; padding-bottom: 5px; }
         .history-header h3 { font-size: 0.85rem; margin: 0; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
@@ -99,6 +112,7 @@
 </head>
 <body class="dark-mode">
 
+    <!-- TELA DE BLOQUEIO -->
     <div id="block-wrapper" style="display: none;">
         <div class="login-box card" style="border-top: 4px solid #ef4444;">
             <h1 style="color: #ef4444;"><i class="fas fa-lock"></i> Acesso Suspenso</h1>
@@ -112,9 +126,10 @@
         </div>
     </div>
 
+    <!-- TELA DE LOGIN -->
     <div id="login-wrapper">
         <div class="login-box card">
-            <h1><i class="fas fa-chart-pie"></i> BI Delivery</h1>
+            <h1><i class="fas fa-chart-pie"></i> Delivery BI</h1>
             <p>Acesse o seu SaaS Financeiro na nuvem</p>
             <div class="login-error" id="loginError">Usuário ou senha incorretos.</div>
             <form id="formLogin">
@@ -129,10 +144,11 @@
         </div>
     </div>
 
+    <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar" style="display: none;">
-        <div class="sidebar-logo"><i class="fas fa-chart-pie"></i><span>BI Delivery</span></div>
+        <div class="sidebar-logo"><i class="fas fa-chart-pie"></i><span>Delivery BI</span></div>
         <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i><span>Visão Geral</span></div>
-        <div class="nav-item" onclick="switchTab('vendas', this)"><i class="fas fa-motorcycle"></i><span>Lançar Vendas</span></div>
+        <div class="nav-item" onclick="switchTab('vendas', this)"><i class="fas fa-dollar-sign"></i><span>Lançar Vendas</span></div>
         <div class="nav-item" onclick="switchTab('despesas', this)"><i class="fas fa-file-invoice-dollar"></i><span>Despesas Op.</span></div>
         <div class="nav-item" onclick="switchTab('receitas', this)"><i class="fas fa-hand-holding-usd"></i><span>Receitas Avulsas</span></div>
         <div class="nav-item" onclick="switchTab('produtos', this)"><i class="fas fa-box-open"></i><span>Cadastrar Produtos</span></div>
@@ -142,6 +158,7 @@
         <div class="nav-item" id="nav-admin" style="display: none; background: rgba(245, 158, 11, 0.1); color: #f59e0b;" onclick="switchTab('admin', this)"><i class="fas fa-user-shield"></i><span>Gestão SaaS Admin</span></div>
     </div>
 
+    <!-- MAIN APP -->
     <div class="main-wrapper" id="mainWrapper">
         <div class="top-navbar">
             <div class="navbar-left">
@@ -157,6 +174,7 @@
 
         <div class="content-container" id="pdfContent">
             
+            <!-- ABA 1: DASHBOARD -->
             <div id="view-dashboard" class="view-section active">
                 <div class="card" style="display: flex; gap: 10px; align-items: center; padding: 10px 15px; margin-bottom: 5px;">
                     <span style="font-weight: 600; font-size: 0.85rem;"><i class="fas fa-filter text-accent"></i> Período Analisado</span>
@@ -167,11 +185,11 @@
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="card kpi-card"><h3>Faturamento</h3><div class="value" id="kpiFaturamento">R$ 0,00</div><div class="sub-value">Bruto Total</div></div>
-                    <div class="card kpi-card"><h3>Receita Líq.</h3><div class="value" id="kpiReceita" style="color: #10b981;">R$ 0,00</div><div class="sub-value">Global</div></div>
-                    <div class="card kpi-card"><h3>Taxa Média</h3><div class="value" id="kpiTaxa" style="color: #ef4444;">0%</div><div class="sub-value">Retenção Plataf.</div></div>
-                    <div class="card kpi-card"><h3>Ticket Médio</h3><div class="value" id="kpiTicket">R$ 0,00</div><div class="sub-value">Por Pedido</div></div>
-                    <div class="card kpi-card"><h3>Pedidos</h3><div class="value" id="kpiPedidos">0</div><div class="sub-value">Volume Total</div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Faturamento <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiFaturamento">R$ 0,00</div><div class="sub-value">Bruto Total</div><div class="kpi-details" id="detFaturamento"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Receita Líq. <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiReceita" style="color: #10b981;">R$ 0,00</div><div class="sub-value">Global</div><div class="kpi-details" id="detReceita"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Taxa Média <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiTaxa" style="color: #ef4444;">0%</div><div class="sub-value">Retenção Plataf.</div><div class="kpi-details" id="detTaxa"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Ticket Médio <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiTicket">R$ 0,00</div><div class="sub-value">Por Pedido</div><div class="kpi-details" id="detTicket"></div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Pedidos <i class="fas fa-chevron-down"></i></h3><div class="value" id="kpiPedidos">0</div><div class="sub-value">Volume Total</div><div class="kpi-details" id="detPedidos"></div></div>
                     <div class="card kpi-card"><h3>Despesas</h3><div class="value" id="kpiDespesas" style="color: #f59e0b;">R$ 0,00</div><div class="sub-value">Operacionais</div></div>
                     <div class="card kpi-card" style="border-bottom: 2px solid var(--accent);"><h3>Lucro Líquido</h3><div class="value" id="kpiLucroLiq" style="color: var(--accent);">R$ 0,00</div><div class="sub-value">Receita - Desp.</div></div>
                     <div class="card kpi-card" style="border-bottom: 2px solid var(--accent);"><h3>Margem Líq.</h3><div class="value" id="kpiMargem" style="color: var(--accent);">0%</div><div class="sub-value">Sobre Faturam.</div></div>
@@ -185,10 +203,11 @@
                     <div class="card"><h3>Pedidos por Canal</h3><div class="chart-container"><canvas id="donutChart"></canvas></div></div>
                 </div>
 
+                <!-- HISTÓRICO RESTAURADO E SEGURO -->
                 <div class="card history-container" data-html2canvas-ignore="true">
                     <div class="history-header" onclick="this.parentElement.classList.toggle('expanded')">
                         <h3 style="color: var(--text-main);"><i class="fas fa-list text-accent"></i> Últimos Lançamentos (Vendas)</h3>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-down" style="transition: transform 0.3s;"></i>
                     </div>
                     <div class="history-content">
                         <table id="historyTableDashboard">
@@ -199,9 +218,10 @@
                 </div>
             </div>
 
+            <!-- ABA VENDAS -->
             <div id="view-vendas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
-                    <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-motorcycle text-accent"></i> Registrar Nova Venda</h2>
+                    <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-dollar-sign text-accent"></i> Registrar Nova Venda</h2>
                     <form id="formVendas">
                         <div class="form-grid">
                             <div class="form-group"><label>Data</label><input type="date" id="dataVenda" required></div>
@@ -242,6 +262,7 @@
                 </div>
             </div>
 
+            <!-- ABA DESPESAS -->
             <div id="view-despesas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-file-invoice-dollar text-accent"></i> Registrar Despesa</h2>
@@ -261,10 +282,13 @@
                 </div>
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
                     <h3 style="font-size: 0.9rem; margin-bottom: 10px;">Histórico de Despesas</h3>
-                    <table id="tableDespesas"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
+                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                        <table id="tableDespesas"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
+                    </div>
                 </div>
             </div>
 
+            <!-- ABA RECEITAS EXTRAS -->
             <div id="view-receitas" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-hand-holding-usd text-accent"></i> Registrar Receita Avulsa</h2>
@@ -279,10 +303,13 @@
                 </div>
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
                     <h3 style="font-size: 0.9rem; margin-bottom: 10px;">Histórico de Receitas Extras</h3>
-                    <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
+                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                        <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead><tbody></tbody></table>
+                    </div>
                 </div>
             </div>
 
+            <!-- ABA CADASTRAR PRODUTOS -->
             <div id="view-produtos" class="view-section">
                 <div class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-box-open text-accent"></i> Cadastrar Produtos</h2>
@@ -296,6 +323,7 @@
                 </div>
             </div>
 
+            <!-- ABA PAGAMENTO MOTOBOY -->
             <div id="view-motoboy" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-helmet-safety text-accent"></i> Lançamento Pagamento Motoboy</h2>
@@ -327,6 +355,7 @@
                 </div>
             </div>
 
+            <!-- ABA SIMULAÇÃO DE PRECIFICAÇÃO -->
             <div id="view-precificacao" class="view-section">
                 <div class="card" style="max-width: 600px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-calculator text-accent"></i> Simulação de Precificação</h2>
@@ -344,6 +373,7 @@
                 </div>
             </div>
 
+            <!-- ABA INVENTÁRIO -->
             <div id="view-inventario" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;"><i class="fas fa-clipboard-check text-accent"></i> Realizar Inventário</h2>
@@ -365,6 +395,7 @@
                 </div>
             </div>
 
+            <!-- ABA ADMIN -->
             <div id="view-admin" class="view-section">
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%;">
                     <h2 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; color:#f59e0b;"><i class="fas fa-user-shield"></i> Gestão SaaS Admin</h2>
@@ -378,6 +409,7 @@
         </div> 
     </div>
 
+    <!-- MODAL PERFIL -->
     <div id="modalPerfil" class="modal-overlay">
         <div class="modal-content card">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-user-cog text-accent"></i> Configurações da Conta</h3>
@@ -392,6 +424,7 @@
         </div>
     </div>
 
+    <!-- MODAL INVENTÁRIO -->
     <div id="modalInventario" class="modal-overlay">
         <div class="modal-content card" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
             <h3 style="margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">Detalhes do Inventário</h3>
@@ -413,11 +446,8 @@
         let bdMotoboys = []; let bdInventarios = []; 
         let perfilDados = { nome: 'Usuário', foto: '', statusAcesso: 'ativo' };
         
-        // Variáveis de Edição Restauradas
         let produtosTempVenda = []; let graficosInstancias = {};
-        let editandoIdVenda = null;
-        let editandoIdDespesa = null;
-        let editandoIdReceita = null;
+        let editandoIdVenda = null; let editandoIdDespesa = null; let editandoIdReceita = null;
 
         const coresCanais = { 'iFood': '#ef4444', 'Keeta': '#10b981', '99 Foods': '#f59e0b', 'Outras Receitas': '#64748b' };
 
@@ -426,10 +456,15 @@
         document.getElementById('dataReceitaAvulsa').valueAsDate = new Date();
         document.getElementById('dataMotoboy').valueAsDate = new Date();
 
+        // Função Matemática Blindada para não quebrar a tela
+        function formatarMoeda(v) { 
+            const val = Number(v) || 0; 
+            return `R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; 
+        }
+
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                // Cria doc do usuario garantindo que o bd inicialize sem travar
                 db.collection('usuarios').doc(user.uid).get().then(doc => { 
                     if(!doc.exists) db.collection('usuarios').doc(user.uid).set({ email: user.email, nome: "Nova Loja Cadastrada", statusAcesso: "ativo" }); 
                 });
@@ -446,14 +481,21 @@
                         }
                     }
                 });
-                if (user.email === MEU_EMAIL_ADMIN) document.getElementById('nav-admin').style.display = 'flex';
+
+                if (user.email === MEU_EMAIL_ADMIN) {
+                    document.getElementById('nav-admin').style.display = 'flex';
+                } else {
+                    document.getElementById('nav-admin').style.display = 'none';
+                    if(document.getElementById('view-admin').classList.contains('active')) document.querySelectorAll('.nav-item')[0].click();
+                }
+                
                 applyTheme();
             } else {
                 currentUser = null; document.getElementById('block-wrapper').style.display = 'none'; document.getElementById('login-wrapper').style.display = 'flex'; document.getElementById('sidebar').style.display = 'none'; document.getElementById('mainWrapper').style.display = 'none';
+                document.getElementById('nav-admin').style.display = 'none';
             }
         });
 
-        // CRIAÇÃO E LOGIN RESTAURADOS
         document.getElementById('formLogin').addEventListener('submit', (e) => { 
             e.preventDefault(); 
             auth.signInWithEmailAndPassword(document.getElementById('authEmail').value, document.getElementById('authPassword').value)
@@ -474,7 +516,6 @@
         function recuperarSenha() { const email = document.getElementById('authEmail').value; if (email) auth.sendPasswordResetEmail(email).then(() => alert("E-mail enviado!")); else alert("Digite seu e-mail no campo correspondente.");}
         function fazerLogout() { auth.signOut(); }
 
-        // PIPELINE DE DADOS
         function carregarDadosDaNuvem() {
             const uid = currentUser.uid;
             db.collection('vendas').where('userId', '==', uid).onSnapshot(snap => { bdVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); atualizarDashboard(); renderizarTabelaVendas(); });
@@ -485,9 +526,6 @@
             db.collection('inventarios').where('userId', '==', uid).onSnapshot(snap => { bdInventarios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); if(document.getElementById('view-inventario').classList.contains('active')) renderizarHistoricoInventarios(); });
         }
 
-        // ==========================================
-        // PERFIL
-        // ==========================================
         function renderizarPerfilUI() {
             document.getElementById('nomeUsuario').innerText = perfilDados.nome || 'Usuário';
             const avatarDiv = document.getElementById('avatarUsuario');
@@ -512,60 +550,33 @@
             } else { db.collection('usuarios').doc(currentUser.uid).update(pacote).then(fecharModalPerfil); }
         });
 
-        // ==========================================
-        // ADMIN GESTÃO DE LOJAS RESTAURADO
-        // ==========================================
         async function carregarListaUsuariosAdmin() {
             if(currentUser.email !== MEU_EMAIL_ADMIN) return;
             try {
                 const snapshot = await db.collection('usuarios').get();
                 const tbody = document.querySelector('#tableAdminUsuarios tbody');
                 tbody.innerHTML = '';
-                
+                if(snapshot.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum cliente encontrado.</td></tr>`; return; }
                 snapshot.forEach(doc => {
-                    const u = doc.data();
-                    const corStatus = u.statusAcesso === 'ativo' ? '#10b981' : '#ef4444';
-                    tbody.innerHTML += `<tr>
-                        <td><b>${u.email}</b></td>
-                        <td><small>${doc.id}</small></td>
-                        <td style="color:${corStatus}; font-weight:700;">${u.statusAcesso ? u.statusAcesso.toUpperCase() : 'ATIVO'}</td>
-                        <td>
-                            <button class="btn btn-outline" style="padding:4px 8px; border-color:#10b981; color:#10b981;" onclick="alterarStatusConta('${doc.id}', 'ativo')"><i class="fas fa-check"></i> Ativar</button>
-                            <button class="btn btn-outline" style="padding:4px 8px; border-color:#ef4444; color:#ef4444;" onclick="alterarStatusConta('${doc.id}', 'bloqueado')"><i class="fas fa-ban"></i> Bloquear</button>
-                        </td>
-                    </tr>`;
+                    const u = doc.data(); const corStatus = u.statusAcesso === 'ativo' ? '#10b981' : '#ef4444';
+                    tbody.innerHTML += `<tr><td><b>${u.email}</b></td><td><small>${doc.id}</small></td><td style="color:${corStatus}; font-weight:700;">${u.statusAcesso ? u.statusAcesso.toUpperCase() : 'ATIVO'}</td><td><button class="btn btn-outline" style="padding:4px 8px; border-color:#10b981; color:#10b981;" onclick="alterarStatusConta('${doc.id}', 'ativo')"><i class="fas fa-check"></i> Ativar</button> <button class="btn btn-outline" style="padding:4px 8px; border-color:#ef4444; color:#ef4444;" onclick="alterarStatusConta('${doc.id}', 'bloqueado')"><i class="fas fa-ban"></i> Bloquear</button></td></tr>`;
                 });
-            } catch(e) {
-                const tbody = document.querySelector('#tableAdminUsuarios tbody');
-                tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erro de Permissão: Você inseriu seu e-mail corretamente nas Regras do Firebase?</td></tr>`;
-            }
+            } catch(e) { document.querySelector('#tableAdminUsuarios tbody').innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erro de Permissão: Verifique se o e-mail nas Regras do Firebase é exatamente ${MEU_EMAIL_ADMIN}</td></tr>`; }
         }
         function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status atualizado!'); carregarListaUsuariosAdmin(); }); }
 
-
-        // ==========================================
-        // PRODUTOS
-        // ==========================================
         function cadastrarProdutoBase() { const n = document.getElementById('novoProdutoNome').value; const c = parseFloat(document.getElementById('novoProdutoCusto').value)||0; const q = parseInt(document.getElementById('novoProdutoQtd').value)||0; if(n) { db.collection('produtos').add({ nome:n, custo:c, estoque:q, userId: currentUser.uid }); document.getElementById('novoProdutoNome').value=''; document.getElementById('novoProdutoCusto').value=''; document.getElementById('novoProdutoQtd').value=''; } }
         function deletarProdutoBase(id) { if(confirm("Apagar produto?")) db.collection('produtos').doc(id).delete(); }
-        function renderizarBaseProdutos() { const ul = document.getElementById('listaBaseProdutos'); ul.innerHTML = ''; bdProdutos.forEach(p => { ul.innerHTML += `<li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--panel-border);"><div><b>${p.nome}</b><br><small>Custo: R$ ${p.custo} | Estoque: ${p.estoque} un.</small></div><button class="btn btn-outline" style="color:red;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash"></i></button></li>`; }); }
+        function renderizarBaseProdutos() { const ul = document.getElementById('listaBaseProdutos'); ul.innerHTML = ''; bdProdutos.forEach(p => { ul.innerHTML += `<li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--panel-border);"><div><b>${p.nome}</b><br><small>Custo: ${formatarMoeda(p.custo)} | Estoque: ${p.estoque} un.</small></div><button class="btn btn-outline" style="color:red;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash"></i></button></li>`; }); }
         function atualizarSelectProdutos() { const s = document.getElementById('produtoSelect'); s.innerHTML = '<option value="">-- Vincular Item --</option>'; bdProdutos.forEach(p => { s.innerHTML += `<option value="${p.nome}">${p.nome}</option>`; }); }
         function addProdutoVenda() { const v = document.getElementById('produtoSelect').value; if(v) { produtosTempVenda.push(v); renderizarChipsVenda(); } }
         function remProdutoVenda(i) { produtosTempVenda.splice(i, 1); renderizarChipsVenda(); }
         function renderizarChipsVenda() { const d = document.getElementById('listaProdutosVenda'); d.innerHTML = ''; produtosTempVenda.forEach((p, i) => { d.innerHTML += `<div style="background:var(--input-bg); padding:4px; border:1px solid var(--panel-border); margin:2px; border-radius:4px;">${p} <i class="fas fa-times" style="color:red; cursor:pointer;" onclick="remProdutoVenda(${i})"></i></div>`; }); }
 
-        // ==========================================
-        // VENDAS (HISTÓRICO E EDIÇÃO RESTAURADOS)
-        // ==========================================
         document.getElementById('formVendas').addEventListener('submit', function(e) { 
             e.preventDefault(); 
-            const venda = { data: document.getElementById('dataVenda').value, diaSemana: document.getElementById('diaSemanaVenda').value, canal: document.getElementById('canalVenda').value, qtdPedidos: parseInt(document.getElementById('qtdPedidosVenda').value), qtdItens: parseInt(document.getElementById('qtdItensVenda').value), faturamento: parseFloat(document.getElementById('faturamentoVenda').value), receitaLiquida: parseFloat(document.getElementById('liquidoVenda').value), produtos: [...produtosTempVenda], userId: currentUser.uid };
-            
-            if(editandoIdVenda) {
-                db.collection('vendas').doc(editandoIdVenda).update(venda);
-                editandoIdVenda = null; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-save"></i> Salvar Venda';
-            } else { db.collection('vendas').add(venda); }
-            
+            const venda = { data: document.getElementById('dataVenda').value, diaSemana: document.getElementById('diaSemanaVenda').value, canal: document.getElementById('canalVenda').value, qtdPedidos: parseInt(document.getElementById('qtdPedidosVenda').value)||0, qtdItens: parseInt(document.getElementById('qtdItensVenda').value)||0, faturamento: parseFloat(document.getElementById('faturamentoVenda').value)||0, receitaLiquida: parseFloat(document.getElementById('liquidoVenda').value)||0, produtos: [...produtosTempVenda], userId: currentUser.uid };
+            if(editandoIdVenda) { db.collection('vendas').doc(editandoIdVenda).update(venda); editandoIdVenda = null; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-save"></i> Salvar Venda'; } else { db.collection('vendas').add(venda); }
             document.getElementById('formVendas').reset(); produtosTempVenda = []; renderizarChipsVenda(); 
         });
 
@@ -573,93 +584,66 @@
         function editarLancamentoVenda(id) {
             const item = bdVendas.find(x => x.id === id); if(!item) return;
             document.getElementById('dataVenda').value = item.data; document.getElementById('diaSemanaVenda').value = item.diaSemana; document.getElementById('canalVenda').value = item.canal; document.getElementById('qtdPedidosVenda').value = item.qtdPedidos; document.getElementById('qtdItensVenda').value = item.qtdItens; document.getElementById('faturamentoVenda').value = item.faturamento; document.getElementById('liquidoVenda').value = item.receitaLiquida;
-            produtosTempVenda = [...(item.produtos || [])]; renderizarChipsVenda();
-            editandoIdVenda = id; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-edit"></i> Atualizar Venda';
-            window.scrollTo(0,0);
+            produtosTempVenda = [...(item.produtos || [])]; renderizarChipsVenda(); editandoIdVenda = id; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-edit"></i> Atualizar Venda'; window.scrollTo(0,0);
         }
 
         function renderizarTabelaVendas() {
             const tbody = document.querySelector('#tableVendasGeral tbody'); if(!tbody) return; tbody.innerHTML = '';
-            const ord = [...bdVendas].sort((a,b) => new Date(b.data) - new Date(a.data));
+            const ord = [...bdVendas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
             ord.forEach(v => {
-                tbody.innerHTML += `<tr><td>${v.data.split('-').reverse().join('/')}</td><td><span style="color:${coresCanais[v.canal]}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td>
-                <td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarLancamentoVenda('${v.id}')"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarVenda('${v.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : '';
+                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><span style="color:${coresCanais[v.canal]}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td>
+                <td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarLancamentoVenda('${v.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarVenda('${v.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
 
-        // ==========================================
-        // DESPESAS (HISTÓRICO E EDIÇÃO RESTAURADOS)
-        // ==========================================
         document.getElementById('formDespesas').addEventListener('submit', function(e) { 
             e.preventDefault(); 
-            const despesa = { data: document.getElementById('dataDespesa').value, categoria: document.getElementById('categoriaDespesa').value, valor: parseFloat(document.getElementById('valorDespesa').value), descricao: document.getElementById('descDespesa').value, userId: currentUser.uid };
-            
-            if(editandoIdDespesa) {
-                db.collection('despesas').doc(editandoIdDespesa).update(despesa);
-                editandoIdDespesa = null; document.getElementById('btnSalvarDespesa').innerHTML = '<i class="fas fa-plus"></i> Lançar Despesa';
-            } else { db.collection('despesas').add(despesa); }
+            const despesa = { data: document.getElementById('dataDespesa').value, categoria: document.getElementById('categoriaDespesa').value, valor: parseFloat(document.getElementById('valorDespesa').value)||0, descricao: document.getElementById('descDespesa').value, userId: currentUser.uid };
+            if(editandoIdDespesa) { db.collection('despesas').doc(editandoIdDespesa).update(despesa); editandoIdDespesa = null; document.getElementById('btnSalvarDespesa').innerHTML = '<i class="fas fa-plus"></i> Lançar Despesa'; } else { db.collection('despesas').add(despesa); }
             document.getElementById('formDespesas').reset(); 
         });
 
         function deletarDespesa(id) { if(confirm("Excluir despesa?")) db.collection('despesas').doc(id).delete(); }
         function editarDespesa(id) {
-            const item = bdDespesas.find(x => x.id === id); if(!item) return;
-            document.getElementById('dataDespesa').value = item.data; document.getElementById('categoriaDespesa').value = item.categoria; document.getElementById('valorDespesa').value = item.valor; document.getElementById('descDespesa').value = item.descricao;
-            editandoIdDespesa = id; document.getElementById('btnSalvarDespesa').innerHTML = '<i class="fas fa-edit"></i> Atualizar Despesa';
-            window.scrollTo(0,0);
+            const item = bdDespesas.find(x => x.id === id); if(!item) return; document.getElementById('dataDespesa').value = item.data; document.getElementById('categoriaDespesa').value = item.categoria; document.getElementById('valorDespesa').value = item.valor; document.getElementById('descDespesa').value = item.descricao; editandoIdDespesa = id; document.getElementById('btnSalvarDespesa').innerHTML = '<i class="fas fa-edit"></i> Atualizar Despesa'; window.scrollTo(0,0);
         }
 
         function renderizarTabelaDespesas() {
             const tbody = document.querySelector('#tableDespesas tbody'); if(!tbody) return; tbody.innerHTML = '';
-            const ord = [...bdDespesas].sort((a,b) => new Date(b.data) - new Date(a.data));
+            const ord = [...bdDespesas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
             ord.forEach(d => {
-                tbody.innerHTML += `<tr><td>${d.data.split('-').reverse().join('/')}</td><td>${d.categoria}</td><td>${d.descricao}</td><td style="color:#ef4444;">${formatarMoeda(d.valor)}</td>
-                <td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarDespesa('${d.id}')"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarDespesa('${d.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                const dataFormatada = d.data ? d.data.split('-').reverse().join('/') : '';
+                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td>${d.categoria}</td><td>${d.descricao}</td><td style="color:#ef4444;">${formatarMoeda(d.valor)}</td>
+                <td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarDespesa('${d.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarDespesa('${d.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
 
-        // ==========================================
-        // RECEITAS EXTRAS (HISTÓRICO E EDIÇÃO RESTAURADOS)
-        // ==========================================
         document.getElementById('formReceitasAvulsas').addEventListener('submit', function(e) { 
             e.preventDefault(); 
-            const rec = { data: document.getElementById('dataReceitaAvulsa').value, descricao: document.getElementById('descReceitaAvulsa').value, valor: parseFloat(document.getElementById('valorReceitaAvulsa').value), userId: currentUser.uid };
-            if(editandoIdReceita) {
-                db.collection('receitas').doc(editandoIdReceita).update(rec);
-                editandoIdReceita = null; document.getElementById('btnSalvarReceitaAvulsa').innerHTML = '<i class="fas fa-plus"></i> Lançar Receita';
-            } else { db.collection('receitas').add(rec); }
+            const rec = { data: document.getElementById('dataReceitaAvulsa').value, descricao: document.getElementById('descReceitaAvulsa').value, valor: parseFloat(document.getElementById('valorReceitaAvulsa').value)||0, userId: currentUser.uid };
+            if(editandoIdReceita) { db.collection('receitas').doc(editandoIdReceita).update(rec); editandoIdReceita = null; document.getElementById('btnSalvarReceitaAvulsa').innerHTML = '<i class="fas fa-plus"></i> Lançar Receita'; } else { db.collection('receitas').add(rec); }
             document.getElementById('formReceitasAvulsas').reset(); 
         });
 
         function deletarReceitaAvulsa(id) { if(confirm("Excluir receita?")) db.collection('receitas').doc(id).delete(); }
         function editarReceitaAvulsa(id) {
-            const item = bdReceitasAvulsas.find(x => x.id === id); if(!item) return;
-            document.getElementById('dataReceitaAvulsa').value = item.data; document.getElementById('descReceitaAvulsa').value = item.descricao; document.getElementById('valorReceitaAvulsa').value = item.valor;
-            editandoIdReceita = id; document.getElementById('btnSalvarReceitaAvulsa').innerHTML = '<i class="fas fa-edit"></i> Atualizar Receita';
-            window.scrollTo(0,0);
+            const item = bdReceitasAvulsas.find(x => x.id === id); if(!item) return; document.getElementById('dataReceitaAvulsa').value = item.data; document.getElementById('descReceitaAvulsa').value = item.descricao; document.getElementById('valorReceitaAvulsa').value = item.valor; editandoIdReceita = id; document.getElementById('btnSalvarReceitaAvulsa').innerHTML = '<i class="fas fa-edit"></i> Atualizar Receita'; window.scrollTo(0,0);
         }
 
         function renderizarTabelaReceitasAvulsas() {
             const tbody = document.querySelector('#tableReceitasAvulsas tbody'); if(!tbody) return; tbody.innerHTML = '';
-            const ord = [...bdReceitasAvulsas].sort((a,b) => new Date(b.data) - new Date(a.data));
+            const ord = [...bdReceitasAvulsas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
             ord.forEach(r => {
-                tbody.innerHTML += `<tr><td>${r.data.split('-').reverse().join('/')}</td><td>${r.descricao}</td><td style="color:#10b981;">${formatarMoeda(r.valor)}</td>
-                <td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarReceitaAvulsa('${r.id}')"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarReceitaAvulsa('${r.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                const dataFormatada = r.data ? r.data.split('-').reverse().join('/') : '';
+                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td>${r.descricao}</td><td style="color:#10b981;">${formatarMoeda(r.valor)}</td>
+                <td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarReceitaAvulsa('${r.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarReceitaAvulsa('${r.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
 
-        // ==========================================
-        // NOVOS MÓDULOS (MOTOBOYS, INVENTARIO, PRECIFICAÇÃO)
-        // ==========================================
         document.getElementById('formMotoboy').addEventListener('submit', function(e) {
             e.preventDefault();
-            const diaria = parseFloat(document.getElementById('diariaMotoboy').value) || 0;
-            const extra = parseFloat(document.getElementById('extraMotoboy').value) || 0;
-            const qtd = parseInt(document.getElementById('qtdEntregasMotoboy').value) || 0;
-            const totalPago = diaria + (qtd * extra);
+            const diaria = parseFloat(document.getElementById('diariaMotoboy').value) || 0; const extra = parseFloat(document.getElementById('extraMotoboy').value) || 0; const qtd = parseInt(document.getElementById('qtdEntregasMotoboy').value) || 0; const totalPago = diaria + (qtd * extra);
             db.collection('motoboys').add({ data: document.getElementById('dataMotoboy').value, nome: document.getElementById('nomeMotoboy').value, qtdEntregas: qtd, diaria: diaria, extra: extra, total: totalPago, status: document.getElementById('statusMotoboy').value, userId: currentUser.uid }).then(() => { document.getElementById('formMotoboy').reset(); document.getElementById('dataMotoboy').valueAsDate = new Date(); document.getElementById('statusMotoboy').value = "Pendente"; });
         });
 
@@ -667,10 +651,10 @@
         function alternarStatusMotoboy(id, statusAtual) { const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago'; db.collection('motoboys').doc(id).update({ status: novoStatus }); }
         function renderizarHistoricoMotoboys() {
             const tbody = document.querySelector('#tableMotoboys tbody'); tbody.innerHTML = '';
-            const ord = [...bdMotoboys].sort((a,b) => new Date(b.data) - new Date(a.data));
+            const ord = [...bdMotoboys].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
             ord.forEach(m => {
-                const corStatus = m.status === 'Pago' ? '#10b981' : '#f59e0b';
-                tbody.innerHTML += `<tr><td>${m.data.split('-').reverse().join('/')}</td><td><b>${m.nome}</b></td><td>${m.qtdEntregas}</td><td><b>R$ ${m.total.toFixed(2)}</b></td><td><span style="color: ${corStatus}; font-weight: bold; cursor: pointer;" onclick="alternarStatusMotoboy('${m.id}', '${m.status}')">${m.status}</span></td><td><button class="btn btn-outline" style="padding: 2px 6px; color: red; border-color: red;" onclick="deletarMotoboy('${m.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                const corStatus = m.status === 'Pago' ? '#10b981' : '#f59e0b'; const dataFormatada = m.data ? m.data.split('-').reverse().join('/') : '';
+                tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><b>${m.nome}</b></td><td>${m.qtdEntregas}</td><td><b>${formatarMoeda(m.total)}</b></td><td><span style="color: ${corStatus}; font-weight: bold; cursor: pointer;" onclick="alternarStatusMotoboy('${m.id}', '${m.status}')">${m.status}</span></td><td><button class="btn btn-outline" style="padding: 2px 6px; color: red; border-color: red;" onclick="deletarMotoboy('${m.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
 
@@ -680,7 +664,7 @@
             const somaPercentuais = (taxa + margem) / 100;
             if (somaPercentuais >= 1) { aviso.style.display = 'block'; res.innerText = "R$ 0,00"; return; }
             aviso.style.display = 'none'; const precoVenda = (custo + embalagem) / (1 - somaPercentuais);
-            res.innerText = `R$ ${precoVenda.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`;
+            res.innerText = formatarMoeda(precoVenda);
         }
 
         function renderizarTabelaInventario() {
@@ -691,11 +675,8 @@
         function salvarInventario() {
             const itens = []; let divergenciaTotalR = 0; const promises = [];
             document.querySelectorAll('.input-inventario').forEach(input => {
-                const id = input.getAttribute('data-id'); const nome = input.getAttribute('data-nome'); const custo = parseFloat(input.getAttribute('data-custo')); const atual = parseInt(input.getAttribute('data-atual')); const encontrado = parseInt(input.value);
-                if (atual !== encontrado) {
-                    const divQtd = encontrado - atual; const divR = divQtd * custo; divergenciaTotalR += divR;
-                    itens.push({ id, nome, atual, encontrado, divQtd, divR }); promises.push(db.collection('produtos').doc(id).update({ estoque: encontrado }));
-                }
+                const id = input.getAttribute('data-id'); const nome = input.getAttribute('data-nome'); const custo = parseFloat(input.getAttribute('data-custo'))||0; const atual = parseInt(input.getAttribute('data-atual'))||0; const encontrado = parseInt(input.value)||0;
+                if (atual !== encontrado) { const divQtd = encontrado - atual; const divR = divQtd * custo; divergenciaTotalR += divR; itens.push({ id, nome, atual, encontrado, divQtd, divR }); promises.push(db.collection('produtos').doc(id).update({ estoque: encontrado })); }
             });
             if (itens.length > 0) { promises.push(db.collection('inventarios').add({ dataHora: new Date().toLocaleString('pt-BR'), divergenciaTotalR, itens, userId: currentUser.uid })); Promise.all(promises).then(() => { alert("Inventário salvo e estoques atualizados na base de produtos!"); });
             } else { alert("Nenhuma divergência foi detectada. O estoque foi mantido."); }
@@ -705,28 +686,22 @@
             const tbody = document.querySelector('#tableHistoricoInventario tbody'); tbody.innerHTML = '';
             const ord = [...bdInventarios].sort((a,b) => b.dataHora.localeCompare(a.dataHora));
             ord.forEach(inv => {
-                const cor = inv.divergenciaTotalR < 0 ? '#ef4444' : (inv.divergenciaTotalR > 0 ? '#10b981' : 'var(--text-muted)');
-                const sinal = inv.divergenciaTotalR > 0 ? '+' : '';
-                tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} R$ ${inv.divergenciaTotalR.toFixed(2)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td></tr>`;
+                const cor = inv.divergenciaTotalR < 0 ? '#ef4444' : (inv.divergenciaTotalR > 0 ? '#10b981' : 'var(--text-muted)'); const sinal = inv.divergenciaTotalR > 0 ? '+' : '';
+                tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} ${formatarMoeda(inv.divergenciaTotalR)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td></tr>`;
             });
         }
 
         function abrirModalInventario(invStr) {
-            const inv = typeof invStr === 'string' ? JSON.parse(invStr) : invStr;
-            let html = `<table style="width: 100%;"><thead><tr><th>Produto</th><th>Sistema</th><th>Físico</th><th>Div (R$)</th></tr></thead><tbody>`;
-            inv.itens.forEach(i => { const cor = i.divR < 0 ? '#ef4444' : '#10b981'; html += `<tr><td>${i.nome}</td><td>${i.atual}</td><td>${i.encontrado}</td><td style="color: ${cor};">${i.divR > 0 ? '+' : ''} R$ ${i.divR.toFixed(2)}</td></tr>`; }); html += `</tbody></table>`;
+            const inv = typeof invStr === 'string' ? JSON.parse(invStr) : invStr; let html = `<table style="width: 100%;"><thead><tr><th>Produto</th><th>Sistema</th><th>Físico</th><th>Div (R$)</th></tr></thead><tbody>`;
+            inv.itens.forEach(i => { const cor = i.divR < 0 ? '#ef4444' : '#10b981'; html += `<tr><td>${i.nome}</td><td>${i.atual}</td><td>${i.encontrado}</td><td style="color: ${cor};">${i.divR > 0 ? '+' : ''} ${formatarMoeda(i.divR)}</td></tr>`; }); html += `</tbody></table>`;
             document.getElementById('conteudoModalInventario').innerHTML = html; document.getElementById('modalInventario').classList.add('active');
         }
         function fecharModalInventario() { document.getElementById('modalInventario').classList.remove('active'); }
 
-        // ==========================================
-        // GESTÃO DE TELAS E DASHBOARD 
-        // ==========================================
         function switchTab(tabId, element) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + tabId).classList.add('active');
-            element.classList.add('active');
+            document.getElementById('view-' + tabId).classList.add('active'); element.classList.add('active');
             
             const titulos = { 'dashboard': 'Visão Geral (Dashboard)', 'vendas': 'Lançamento de Vendas', 'despesas': 'Despesas Operacionais', 'receitas': 'Receitas Avulsas', 'produtos': 'Cadastrar Produtos e Estoque', 'motoboy': 'Pagamento de Motoboys', 'precificacao': 'Simulador de Precificação', 'inventario': 'Inventário e Divergências', 'admin': 'Gestão SaaS Admin' };
             document.getElementById('pageTitle').innerText = titulos[tabId] || 'Painel';
@@ -754,23 +729,45 @@
             let dadosPorDia = { 'Segunda-feira':0, 'Terça-feira':0, 'Quarta-feira':0, 'Quinta-feira':0, 'Sexta-feira':0, 'Sábado':0, 'Domingo':0 };
             let contagemProdutos = {};
 
-            // Renderiza Mini-Histórico no Dashboard (Restaurado)
             const tbodyVDash = document.querySelector('#historyTableDashboard tbody'); tbodyVDash.innerHTML = '';
-            const ordV = [...vFiltradas].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 5); // Mostra os 5 ultimos
-            ordV.forEach(v => {
-                tbodyVDash.innerHTML += `<tr><td>${v.data.split('-').reverse().join('/')}</td><td><span style="color:${coresCanais[v.canal]}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td><td>${v.qtdPedidos}</td></tr>`;
-            });
+            const ordV = [...vFiltradas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5); 
+            ordV.forEach(v => { const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : ''; tbodyVDash.innerHTML += `<tr><td>${dataFormatada}</td><td><span style="color:${coresCanais[v.canal]}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td><td>${v.qtdPedidos}</td></tr>`; });
 
             vFiltradas.forEach(v => {
-                totalFatVendas += v.faturamento; totalRecVendas += v.receitaLiquida; totalPed += v.qtdPedidos;
-                if(dadosPorCanal[v.canal]) { dadosPorCanal[v.canal].fat += v.faturamento; dadosPorCanal[v.canal].rec += v.receitaLiquida; dadosPorCanal[v.canal].ped += v.qtdPedidos; }
-                if(dadosPorDia[v.diaSemana] !== undefined) dadosPorDia[v.diaSemana] += v.faturamento;
+                totalFatVendas += v.faturamento || 0; totalRecVendas += v.receitaLiquida || 0; totalPed += v.qtdPedidos || 0;
+                if(dadosPorCanal[v.canal]) { dadosPorCanal[v.canal].fat += v.faturamento || 0; dadosPorCanal[v.canal].rec += v.receitaLiquida || 0; dadosPorCanal[v.canal].ped += v.qtdPedidos || 0; }
+                if(dadosPorDia[v.diaSemana] !== undefined) dadosPorDia[v.diaSemana] += v.faturamento || 0;
                 if(v.produtos) v.produtos.forEach(p => { contagemProdutos[p] = (contagemProdutos[p] || 0) + 1; });
             });
-            dFiltradas.forEach(d => totalDesp += d.valor); rFiltradas.forEach(r => totalRecAvulsas += r.valor);
+            dFiltradas.forEach(d => totalDesp += d.valor || 0); rFiltradas.forEach(r => totalRecAvulsas += r.valor || 0);
 
             const totalFatGlobal = totalFatVendas + totalRecAvulsas; const totalRecGlobal = totalRecVendas + totalRecAvulsas; const lucroL = totalRecGlobal - totalDesp; const margem = totalFatGlobal > 0 ? (lucroL / totalFatGlobal) * 100 : 0;
-            document.getElementById('kpiFaturamento').innerText = formatarMoeda(totalFatGlobal); document.getElementById('kpiReceita').innerText = formatarMoeda(totalRecGlobal); document.getElementById('kpiTaxa').innerText = totalFatVendas > 0 ? `${(((totalFatVendas - totalRecVendas)/totalFatVendas)*100).toFixed(1)}%` : '0%'; document.getElementById('kpiTicket').innerText = totalPed > 0 ? formatarMoeda(totalFatVendas / totalPed) : 'R$ 0,00'; document.getElementById('kpiPedidos').innerText = totalPed; document.getElementById('kpiDespesas').innerText = formatarMoeda(totalDesp); document.getElementById('kpiLucroLiq').innerText = formatarMoeda(lucroL); document.getElementById('kpiMargem').innerText = `${margem.toFixed(1)}%`; document.getElementById('kpiEstoque').innerText = formatarMoeda(bdProdutos.reduce((acc,p)=> acc + (p.custo*p.estoque), 0));
+            document.getElementById('kpiFaturamento').innerText = formatarMoeda(totalFatGlobal); document.getElementById('kpiReceita').innerText = formatarMoeda(totalRecGlobal); document.getElementById('kpiTaxa').innerText = totalFatVendas > 0 ? `${(((totalFatVendas - totalRecVendas)/totalFatVendas)*100).toFixed(1)}%` : '0%'; document.getElementById('kpiTicket').innerText = totalPed > 0 ? formatarMoeda(totalFatVendas / totalPed) : 'R$ 0,00'; document.getElementById('kpiPedidos').innerText = totalPed; document.getElementById('kpiDespesas').innerText = formatarMoeda(totalDesp); document.getElementById('kpiLucroLiq').innerText = formatarMoeda(lucroL); document.getElementById('kpiMargem').innerText = `${margem.toFixed(1)}%`; 
+            
+            let valorEstoque = bdProdutos.reduce((acc,p) => acc + ((Number(p.custo)||0) * (Number(p.estoque)||0)), 0);
+            document.getElementById('kpiEstoque').innerText = formatarMoeda(valorEstoque);
+
+            // Restaura o Detalhamento Sanfona dos KPIs
+            let htmlFat = '', htmlRec = '', htmlTicket = '', htmlTaxa = '', htmlPedidos = '';
+            Object.keys(dadosPorCanal).forEach(c => {
+                const d = dadosPorCanal[c]; const tk = d.ped > 0 ? d.fat / d.ped : 0; const tx = d.fat > 0 ? ((d.fat - d.rec) / d.fat) * 100 : 0;
+                if(d.fat > 0 || d.ped > 0) {
+                    htmlFat += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${formatarMoeda(d.fat)}</b></div>`;
+                    htmlRec += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${formatarMoeda(d.rec)}</b></div>`;
+                    htmlTicket += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${formatarMoeda(tk)}</b></div>`;
+                    htmlTaxa += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${tx.toFixed(1)}%</b></div>`;
+                    htmlPedidos += `<div class="detail-row"><span style="color:${coresCanais[c]}">●</span> ${c}: <b>${d.ped}</b></div>`;
+                }
+            });
+            if(totalRecAvulsas > 0) {
+                htmlFat += `<div class="detail-row" style="border-top:1px dashed var(--panel-border); margin-top:4px; padding-top:4px;"><span style="color:var(--accent)">●</span> Extras: <b>${formatarMoeda(totalRecAvulsas)}</b></div>`;
+                htmlRec += `<div class="detail-row" style="border-top:1px dashed var(--panel-border); margin-top:4px; padding-top:4px;"><span style="color:var(--accent)">●</span> Extras: <b>${formatarMoeda(totalRecAvulsas)}</b></div>`;
+            }
+            const detFat = document.getElementById('detFaturamento'); if(detFat) detFat.innerHTML = htmlFat;
+            const detRec = document.getElementById('detReceita'); if(detRec) detRec.innerHTML = htmlRec;
+            const detTk = document.getElementById('detTicket'); if(detTk) detTk.innerHTML = htmlTicket;
+            const detTx = document.getElementById('detTaxa'); if(detTx) detTx.innerHTML = htmlTaxa;
+            const detPed = document.getElementById('detPedidos'); if(detPed) detPed.innerHTML = htmlPedidos;
 
             const gridColor = document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'; const labelsCanal = Object.keys(dadosPorCanal);
             if(graficosInstancias['barChart']) graficosInstancias['barChart'].destroy();

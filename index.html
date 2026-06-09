@@ -61,11 +61,11 @@
         .login-box .logo-container { height: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; pointer-events: none; }
         .login-box .logo-container img { height: 260px; min-height: 260px; width: auto; max-width: none; }
 
-        /* TÉCNICA DE ZOOM NO SVG: SIDEBAR */
-        .sidebar-logo { height: 55px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; pointer-events: none; }
-        .sidebar-logo img { height: 220px; min-height: 220px; width: auto; max-width: none; transition: 0.3s; }
-        .sidebar.collapsed .sidebar-logo { height: 40px; margin-top: 5px;}
-        .sidebar.collapsed .sidebar-logo img { height: 160px; min-height: 160px; }
+        /* TÉCNICA DE SLIDE NO SVG: SIDEBAR (Mostra só o ícone quando fechada) */
+        .sidebar-logo { height: 55px; overflow: hidden; position: relative; margin-bottom: 20px; pointer-events: none; }
+        .sidebar-logo img { height: 220px; min-height: 220px; width: auto; max-width: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: 0.3s all; }
+        .sidebar.collapsed .sidebar-logo { height: 50px; margin-top: 5px; }
+        .sidebar.collapsed .sidebar-logo img { left: 100%; transform: translate(calc(-100% + 60px), -50%); }
 
         /* TÉCNICA DE ZOOM NO SVG: NAVBAR DO TOPO */
         .nav-logo-wrapper { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 50px; width: 220px; overflow: hidden; display: flex; justify-content: center; align-items: center; pointer-events: none; }
@@ -160,7 +160,7 @@
     <div id="login-wrapper">
         <div class="login-box card">
             <div class="logo-container">
-                <img src="logo.svg?v=6" alt="MetricsOne">
+                <img src="logo.svg?v=7" alt="MetricsOne">
             </div>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">Acesse o seu Controle Financeiro</p>
             <div class="login-error" id="loginError">Usuário ou senha incorretos.</div>
@@ -178,7 +178,7 @@
 
     <div class="sidebar" id="sidebar" style="display: none;">
         <div class="sidebar-logo">
-            <img src="logo.svg?v=6" alt="MetricsOne">
+            <img src="logo.svg?v=7" alt="MetricsOne">
         </div>
         <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i><span>Visão Geral</span></div>
         <div class="nav-item" onclick="switchTab('vendas', this)"><i class="fas fa-dollar-sign"></i><span>Lançar Vendas</span></div>
@@ -209,7 +209,7 @@
             </div>
             
             <div class="nav-logo-wrapper">
-                <img src="logo.svg?v=6" alt="MetricsOne">
+                <img src="logo.svg?v=7" alt="MetricsOne">
             </div>
 
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -599,7 +599,7 @@
                             <i class="fas fa-envelope" style="font-size: 1.5rem; color: var(--accent);"></i>
                             <div style="text-align: left;">
                                 <span style="display: block; font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">E-mail</span>
-                                <span style="font-weight: 600; color: var(--text-main);">suporte@metricsone.com.br</span>
+                                <span style="font-weight: 600; color: var(--text-main);">Suportemetricsone@gmail.com</span>
                             </div>
                         </div>
 
@@ -762,9 +762,6 @@
             db.collection('fornecedores').where('userId', '==', uid).onSnapshot(snap => { bdFornecedores = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); atualizarSelectFornecedores(); if(document.getElementById('view-fornecedores').classList.contains('active')) renderizarTabelaFornecedores(); });
         }
 
-        // ==============================
-        // PERFIL E ADMIN
-        // ==============================
         function renderizarPerfilUI() { document.getElementById('nomeUsuario').innerText = perfilDados.nome || 'Usuário'; const avatarDiv = document.getElementById('avatarUsuario'); if (perfilDados.foto) { avatarDiv.innerHTML = `<img src="${perfilDados.foto}" alt="Logo" style="width:100%; height:100%; object-fit:cover;">`; avatarDiv.style.background = 'transparent'; } else { avatarDiv.innerHTML = (perfilDados.nome || 'U').charAt(0).toUpperCase(); avatarDiv.style.background = 'var(--accent)'; } }
         function abrirModalPerfil() { document.getElementById('inputNomePerfil').value = perfilDados.nome || ''; document.getElementById('modalPerfil').classList.add('active'); }
         function fecharModalPerfil() { document.getElementById('modalPerfil').classList.remove('active'); }
@@ -782,9 +779,6 @@
         function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status atualizado!'); carregarListaUsuariosAdmin(); }); }
         function alternarPagamentoConta(uid, status) { db.collection('usuarios').doc(uid).update({ pagamentoEmDia: status }).then(() => { alert('Pagamento atualizado!'); carregarListaUsuariosAdmin(); }); }
 
-        // ==============================
-        // VENDAS (MÓDULO DE LANÇAMENTO)
-        // ==============================
         function renderizarSelectEmbalagens() {
             const select = document.getElementById('vendaEmbalagemSelect');
             if(!select) return; select.innerHTML = '<option value="">-- Nenhuma Embalagem --</option>';
@@ -823,9 +817,6 @@
             document.getElementById('vendaEmbalagemSelect').value = item.embalagemId || ''; document.getElementById('vendaEmbalagemQtd').value = item.embalagemQtd || 0; produtosTempVenda = [...(item.produtos || [])]; renderizarChipsVenda(); editandoIdVenda = id; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-edit"></i> Atualizar Venda'; window.scrollTo(0,0); 
         }
 
-        // ==============================
-        // DESPESAS, RECEITAS E FORNECEDORES
-        // ==============================
         document.getElementById('formDespesas').addEventListener('submit', function(e) { e.preventDefault(); const despesa = { data: document.getElementById('dataDespesa').value, categoria: document.getElementById('categoriaDespesa').value, valor: parseFloat(document.getElementById('valorDespesa').value)||0, descricao: document.getElementById('descDespesa').value, userId: currentUser.uid }; if(editandoIdDespesa) { db.collection('despesas').doc(editandoIdDespesa).update(despesa); editandoIdDespesa = null; document.getElementById('btnSalvarDespesa').innerHTML = '<i class="fas fa-plus"></i> Lançar Despesa'; } else { db.collection('despesas').add(despesa); } document.getElementById('formDespesas').reset(); document.getElementById('dataDespesa').valueAsDate = new Date(); });
         function deletarDespesa(id) { if(confirm("Excluir despesa?")) db.collection('despesas').doc(id).delete(); }
         function editarDespesa(id) { const item = bdDespesas.find(x => x.id === id); if(!item) return; document.getElementById('dataDespesa').value = item.data; document.getElementById('categoriaDespesa').value = item.categoria; document.getElementById('valorDespesa').value = item.valor; document.getElementById('descDespesa').value = item.descricao; editandoIdDespesa = id; document.getElementById('btnSalvarDespesa').innerHTML = '<i class="fas fa-edit"></i> Atualizar Despesa'; window.scrollTo(0,0); }
@@ -861,9 +852,6 @@
         function deletarFornecedor(id) { if(confirm("Deseja apagar este fornecedor?")) db.collection('fornecedores').doc(id).delete(); }
         function editarFornecedor(id) { const f = bdFornecedores.find(x => x.id === id); if(!f) return; document.getElementById('nomeFornecedor').value = f.nome; document.getElementById('cnpjFornecedor').value = f.cnpj || ''; document.getElementById('vendedorFornecedor').value = f.vendedor || ''; document.getElementById('telFornecedor').value = f.telefone || ''; editandoIdFornecedor = id; document.getElementById('btnSalvarFornecedor').innerHTML = '<i class="fas fa-edit"></i> Atualizar Fornecedor'; window.scrollTo(0,0); }
 
-        // ==============================
-        // MÓDULOS DE ESTOQUE, EMBALAGEM E FICHAS
-        // ==============================
         function cadastrarProdutoBase() { const n = document.getElementById('novoProdutoNome').value; const c = parseFloat(document.getElementById('novoProdutoCusto').value)||0; const q = parseInt(document.getElementById('novoProdutoQtd').value)||0; const fornecedor = document.getElementById('novoProdutoFornecedor').value; if(n) { db.collection('produtos').add({ nome:n, custo:c, estoque:q, fornecedor: fornecedor, userId: currentUser.uid }); document.getElementById('novoProdutoNome').value=''; document.getElementById('novoProdutoCusto').value=''; document.getElementById('novoProdutoQtd').value=''; document.getElementById('novoProdutoFornecedor').value=''; } }
         function deletarProdutoBase(id) { if(confirm("Apagar produto?")) db.collection('produtos').doc(id).delete(); }
         

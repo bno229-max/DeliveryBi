@@ -676,6 +676,19 @@
         function calcPerc(valor, base) { if(base === 0) return "0,0%"; return ((Math.abs(valor) / base) * 100).toFixed(1) + "%"; }
 
         // ==============================
+        // LÓGICA: ESTOQUE DINÂMICO
+        // ==============================
+        function getEstoqueAtual(p) {
+            let vendidos = 0;
+            bdVendas.forEach(v => {
+                if(v.produtos) {
+                    vendidos += v.produtos.filter(prodNome => prodNome === p.nome).length;
+                }
+            });
+            return (Number(p.estoque) || 0) - vendidos;
+        }
+
+        // ==============================
         // AUTENTICAÇÃO E INICIALIZAÇÃO
         // ==============================
         auth.onAuthStateChanged(user => {
@@ -720,7 +733,12 @@
 
         function carregarDadosDaNuvem() {
             const uid = currentUser.uid;
-            db.collection('vendas').where('userId', '==', uid).onSnapshot(snap => { bdVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); atualizarDashboard(); renderizarTabelaVendas(); calcularDRE(); });
+            db.collection('vendas').where('userId', '==', uid).onSnapshot(snap => { 
+                bdVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+                atualizarDashboard(); renderizarTabelaVendas(); calcularDRE(); 
+                if(document.getElementById('view-produtos').classList.contains('active')) renderizarBaseProdutos();
+                if(document.getElementById('view-inventario').classList.contains('active')) renderizarTabelaInventario();
+            });
             db.collection('despesas').where('userId', '==', uid).onSnapshot(snap => { bdDespesas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); atualizarDashboard(); renderizarTabelaDespesas(); calcularDRE(); });
             db.collection('receitas').where('userId', '==', uid).onSnapshot(snap => { bdReceitasAvulsas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); atualizarDashboard(); renderizarTabelaReceitasAvulsas(); calcularDRE(); });
             db.collection('produtos').where('userId', '==', uid).onSnapshot(snap => { bdProdutos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderizarBaseProdutos(); atualizarSelectProdutos(); atualizarDashboard(); if(document.getElementById('view-inventario').classList.contains('active')) renderizarTabelaInventario(); calcularDRE(); });
@@ -772,7 +790,7 @@
                 data: document.getElementById('dataVenda').value, 
                 diaSemana: document.getElementById('diaSemanaVenda').value, 
                 canal: document.getElementById('canalVenda').value, 
-                qtdPedidos: 1, // Fixado como 1 pedido por lançamento para facilitar UX
+                qtdPedidos: 1, 
                 qtdItens: parseInt(document.getElementById('qtdItensVenda').value)||0, 
                 faturamento: parseFloat(document.getElementById('faturamentoVenda').value)||0, 
                 receitaLiquida: parseFloat(document.getElementById('liquidoVenda').value)||0, 
@@ -835,7 +853,16 @@
         // ==============================
         function cadastrarProdutoBase() { const n = document.getElementById('novoProdutoNome').value; const c = parseFloat(document.getElementById('novoProdutoCusto').value)||0; const q = parseInt(document.getElementById('novoProdutoQtd').value)||0; const fornecedor = document.getElementById('novoProdutoFornecedor').value; if(n) { db.collection('produtos').add({ nome:n, custo:c, estoque:q, fornecedor: fornecedor, userId: currentUser.uid }); document.getElementById('novoProdutoNome').value=''; document.getElementById('novoProdutoCusto').value=''; document.getElementById('novoProdutoQtd').value=''; document.getElementById('novoProdutoFornecedor').value=''; } }
         function deletarProdutoBase(id) { if(confirm("Apagar produto?")) db.collection('produtos').doc(id).delete(); }
-        function renderizarBaseProdutos() { const ul = document.getElementById('listaBaseProdutos'); ul.innerHTML = ''; bdProdutos.forEach(p => { const forncText = p.fornecedor ? ` | Fornecedor: ${p.fornecedor}` : ''; ul.innerHTML += `<li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--panel-border);"><div><b>${p.nome}</b><br><small>Custo: ${formatarMoeda(p.custo)} | Estoque: ${p.estoque} un.${forncText}</small></div><button class="btn btn-outline" style="color:red;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash"></i></button></li>`; }); }
+        
+        function renderizarBaseProdutos() { 
+            const ul = document.getElementById('listaBaseProdutos'); ul.innerHTML = ''; 
+            bdProdutos.forEach(p => { 
+                const forncText = p.fornecedor ? ` | Fornecedor: ${p.fornecedor}` : ''; 
+                const estAtual = getEstoqueAtual(p);
+                ul.innerHTML += `<li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--panel-border);"><div><b>${p.nome}</b><br><small>Custo: ${formatarMoeda(p.custo)} | Estoque Inicial: ${p.estoque} un.${forncText} | <span style="color:var(--accent); font-weight:600;">Estoque Atual: ${estAtual} un.</span></small></div><button class="btn btn-outline" style="color:red;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash"></i></button></li>`; 
+            }); 
+        }
+        
         function atualizarSelectProdutos() { const s = document.getElementById('produtoSelect'); s.innerHTML = '<option value="">-- Vincular Item --</option>'; bdProdutos.forEach(p => { s.innerHTML += `<option value="${p.nome}">${p.nome}</option>`; }); }
 
         document.getElementById('formEmbalagem').addEventListener('submit', function(e) { e.preventDefault(); const emb = { descricao: document.getElementById('descEmbalagem').value.trim(), preco: parseFloat(document.getElementById('precoEmbalagem').value) || 0, userId: currentUser.uid }; if(editandoIdEmbalagem) { db.collection('embalagens').doc(editandoIdEmbalagem).update(emb); editandoIdEmbalagem = null; document.getElementById('btnSalvarEmbalagem').innerHTML = '<i class="fas fa-save"></i> Salvar Embalagem'; } else { db.collection('embalagens').add(emb); } document.getElementById('formEmbalagem').reset(); });
@@ -843,7 +870,14 @@
         function deletarEmbalagem(id) { if(confirm("Deseja apagar esta embalagem?")) db.collection('embalagens').doc(id).delete(); }
         function editarEmbalagem(id) { const e = bdEmbalagens.find(x => x.id === id); if(!e) return; document.getElementById('descEmbalagem').value = e.descricao; document.getElementById('precoEmbalagem').value = e.preco; editandoIdEmbalagem = id; document.getElementById('btnSalvarEmbalagem').innerHTML = '<i class="fas fa-edit"></i> Atualizar Embalagem'; window.scrollTo(0,0); }
 
-        function renderizarTabelaInventario() { const tbody = document.querySelector('#tableRealizarInventario tbody'); tbody.innerHTML = ''; bdProdutos.forEach(p => { tbody.innerHTML += `<tr><td><b>${p.nome}</b></td><td>${p.estoque} un.</td><td><input type="number" class="input-inventario" data-id="${p.id}" data-nome="${p.nome}" data-custo="${p.custo}" data-atual="${p.estoque}" value="${p.estoque}" style="width: 80px; padding: 4px; text-align: center; border-radius: 4px; border: 1px solid var(--panel-border); background: var(--bg-color); color: var(--text-main);"></td></tr>`; }); }
+        function renderizarTabelaInventario() { 
+            const tbody = document.querySelector('#tableRealizarInventario tbody'); tbody.innerHTML = ''; 
+            bdProdutos.forEach(p => { 
+                const estAtual = getEstoqueAtual(p);
+                const vendidos = (Number(p.estoque)||0) - estAtual;
+                tbody.innerHTML += `<tr><td><b>${p.nome}</b></td><td>${estAtual} un.</td><td><input type="number" class="input-inventario" data-id="${p.id}" data-nome="${p.nome}" data-custo="${p.custo}" data-atual="${estAtual}" data-vendidos="${vendidos}" value="${estAtual}" style="width: 80px; padding: 4px; text-align: center; border-radius: 4px; border: 1px solid var(--panel-border); background: var(--bg-color); color: var(--text-main);"></td></tr>`; 
+            }); 
+        }
         
         function salvarInventario() { 
             const resp = document.getElementById('respInventario').value.trim(); 
@@ -853,6 +887,7 @@
             document.querySelectorAll('.input-inventario').forEach(input => { 
                 const id = input.getAttribute('data-id'); const nome = input.getAttribute('data-nome'); 
                 const custo = parseFloat(input.getAttribute('data-custo'))||0; const atual = parseInt(input.getAttribute('data-atual'))||0; 
+                const vendidosHistorico = parseInt(input.getAttribute('data-vendidos'))||0;
                 const encontrado = parseInt(input.value)||0; 
                 
                 const divQtd = encontrado - atual; 
@@ -861,7 +896,10 @@
                 
                 itensAuditados.push({ id, nome, atual, encontrado, divQtd, divR }); 
                 
-                if (atual !== encontrado) { promises.push(db.collection('produtos').doc(id).update({ estoque: encontrado })); } 
+                if (atual !== encontrado) { 
+                    const novoEstoqueInicial = encontrado + vendidosHistorico;
+                    promises.push(db.collection('produtos').doc(id).update({ estoque: novoEstoqueInicial })); 
+                } 
             }); 
             
             promises.push(db.collection('inventarios').add({ dataHora: new Date().toLocaleString('pt-BR'), responsavel: resp, divergenciaTotalR: divergenciaTotalR, itens: itensAuditados, userId: currentUser.uid })); 
@@ -1037,8 +1075,11 @@
             dFiltradas.forEach(d => totalDesp += d.valor || 0);
 
             const totalFatGlobal = totalFatVendas + totalRecAvulsas; const totalRecGlobal = totalRecVendas + totalRecAvulsas; const lucroL = totalRecGlobal - totalDesp; const margem = totalFatGlobal > 0 ? (lucroL / totalFatGlobal) * 100 : 0;
+            
+            let valorEstoque = bdProdutos.reduce((acc,p) => acc + ((Number(p.custo)||0) * getEstoqueAtual(p)), 0); 
+            
             document.getElementById('kpiFaturamento').innerText = formatarMoeda(totalFatGlobal); document.getElementById('kpiReceita').innerText = formatarMoeda(totalRecGlobal); document.getElementById('kpiTaxa').innerText = totalFatVendas > 0 ? `${(((totalFatVendas - totalRecVendas)/totalFatVendas)*100).toFixed(1)}%` : '0%'; document.getElementById('kpiTicket').innerText = totalPed > 0 ? formatarMoeda(totalFatGlobal / totalPed) : 'R$ 0,00'; document.getElementById('kpiPedidos').innerText = totalPed; document.getElementById('kpiDespesas').innerText = formatarMoeda(totalDesp); document.getElementById('kpiLucroLiq').innerText = formatarMoeda(lucroL); document.getElementById('kpiMargem').innerText = `${margem.toFixed(1)}%`; 
-            let valorEstoque = bdProdutos.reduce((acc,p) => acc + ((Number(p.custo)||0) * (Number(p.estoque)||0)), 0); document.getElementById('kpiEstoque').innerText = formatarMoeda(valorEstoque);
+            document.getElementById('kpiEstoque').innerText = formatarMoeda(valorEstoque);
 
             let htmlFat = '', htmlRec = '', htmlTicket = '', htmlTaxa = '', htmlPedidos = '';
             Object.keys(dadosPorCanal).forEach(c => {

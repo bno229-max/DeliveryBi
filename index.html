@@ -236,7 +236,7 @@
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Taxa Média <i class="fas fa-chevron-down"></i></h3><div class="value text-vermelho" id="kpiTaxa">0%</div><div class="sub-value">Retenção Plataf.</div><div class="kpi-details" id="detTaxa"></div></div>
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Ticket Médio <i class="fas fa-chevron-down"></i></h3><div class="value text-branco" id="kpiTicket">R$ 0,00</div><div class="sub-value">Por Pedido</div><div class="kpi-details" id="detTicket"></div></div>
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Pedidos <i class="fas fa-chevron-down"></i></h3><div class="value text-branco" id="kpiPedidos">0</div><div class="sub-value">Volume Total</div><div class="kpi-details" id="detPedidos"></div></div>
-                    <div class="card kpi-card"><h3>Despesas Totais</h3><div class="value text-vermelho" id="kpiDespesas">R$ 0,00</div><div class="sub-value">CMV + Operacional</div></div>
+                    <div class="card kpi-card"><h3>Despesas Totais</h3><div class="value text-vermelho" id="kpiDespesas">R$ 0,00</div><div class="sub-value">Operacionais</div></div>
                     <div class="card kpi-card"><h3>Lucro Líquido</h3><div class="value text-verde" id="kpiLucroLiq">R$ 0,00</div><div class="sub-value">Receita - Saídas</div></div>
                     <div class="card kpi-card"><h3>Margem Líq.</h3><div class="value text-branco" id="kpiMargem">0%</div><div class="sub-value">Sobre Faturam.</div></div>
                     <div class="card kpi-card"><h3>Estoque Atual</h3><div class="value text-branco" id="kpiEstoque">R$ 0,00</div><div class="sub-value">Valor de Custo</div></div>
@@ -1092,8 +1092,12 @@
             let taxasApps = fatVendas - recLiquidaVendas;
             let receitaLiquidaFinal = fatBrutoTotal - taxasApps;
 
+            // O CMV é calculado para aparecer na tabela como informação gerencial
             let cmvTotal = custoInsumos + custoEmbalagens;
-            let lucroBruto = receitaLiquidaFinal - cmvTotal;
+            
+            // Para não quebrar a matemática visual da DRE baseada no fluxo de caixa, 
+            // o Lucro Bruto espelha a Receita Líquida (já que as compras estão no OPEX)
+            let lucroBruto = receitaLiquidaFinal;
 
             // OPEX (Incluindo os Motoboys em Funcionários)
             let despFuncionarios = gastoMotoboys, despImpostos = 0, despEstruturais = 0;
@@ -1108,7 +1112,9 @@
             });
             
             let opexTotal = despFuncionarios + despImpostos + despEstruturais;
-            let lucroLiquidoFinal = lucroBruto - opexTotal;
+            
+            // CORREÇÃO: O Lucro Líquido agora é a Receita Líquida menos as Despesas Reais (OPEX), ignorando o CMV
+            let lucroLiquidoFinal = receitaLiquidaFinal - opexTotal;
 
             document.getElementById('dreFaturamentoBruto').innerText = formatarMoeda(fatBrutoTotal);
             document.getElementById('dreTaxasPlataformas').innerText = `(${formatarMoeda(taxasApps)})`;
@@ -1226,9 +1232,12 @@
             const totalFatGlobal = totalFatVendas + totalRecAvulsas; 
             const totalRecGlobal = totalRecVendas + totalRecAvulsas; 
             
-            const cmvTotal = custoInsumos + custoEmbalagens;
+            // O CMV continua sendo calculado para os indicadores, mas NÃO entra mais na conta final de saídas
+            const cmvTotal = custoInsumos + custoEmbalagens; 
             const opexTotal = totalDesp + gastoMotoboys;
-            const totalSaidas = cmvTotal + opexTotal;
+            
+            // CORREÇÃO: O total de saídas agora é estritamente o que você lançou nas Despesas + Motoboys
+            const totalSaidas = opexTotal;
             
             const lucroL = totalRecGlobal - totalSaidas; 
             const margem = totalFatGlobal > 0 ? (lucroL / totalFatGlobal) * 100 : 0;

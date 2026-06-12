@@ -245,7 +245,7 @@
                 <div class="charts-grid">
                     <div class="card"><h3>Faturamento vs Líquido</h3><div class="chart-container"><canvas id="barChart"></canvas></div></div>
                     <div class="card"><h3>Vendas por Dia da Semana</h3><div class="chart-container"><canvas id="diaSemanaChart"></canvas></div></div>
-                    <div class="card"><h3>Top 10 Itens Mais Vendidos</h3><div class="chart-container"><canvas id="topProductsChart"></canvas></div></div>
+                    <div class="card"><h3>Top 10 Itens Mais Vendidos</h3><div class="chart-container" style="height: 250px;"><canvas id="topProductsChart"></canvas></div></div>
                     <div class="card"><h3>Pedidos por Canal</h3><div class="chart-container"><canvas id="donutChart"></canvas></div></div>
                 </div>
             </div>
@@ -294,12 +294,17 @@
                     </form>
                 </div>
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top: 10px;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 10px; text-align: center;">Histórico de Lançamentos de Vendas</h3>
-                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
-                        <table id="tableVendasGeral">
-                            <thead><tr><th>Data</th><th>Canal</th><th>Faturamento</th><th>Líquido</th><th>Ações</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                    <h3 style="font-size: 0.9rem; margin-bottom: 0; text-align: center; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 5px;" onclick="toggleHistorico('wrapHistVendas', 'iconHistVendas')">
+                        <span>Histórico de Lançamentos de Vendas</span>
+                        <i class="fas fa-chevron-down text-accent" id="iconHistVendas"></i>
+                    </h3>
+                    <div id="wrapHistVendas" style="display: none; margin-top: 15px;">
+                        <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                            <table id="tableVendasGeral">
+                                <thead><tr><th>Data</th><th>Canal</th><th>Faturamento</th><th>Líquido</th><th>Ações</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -346,9 +351,14 @@
                     </form>
                 </div>
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 10px; text-align: center;">Histórico de Despesas</h3>
-                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
-                        <table id="tableDespesas"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                    <h3 style="font-size: 0.9rem; margin-bottom: 0; text-align: center; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 5px;" onclick="toggleHistorico('wrapHistDespesas', 'iconHistDespesas')">
+                        <span>Histórico de Despesas</span>
+                        <i class="fas fa-chevron-down text-accent" id="iconHistDespesas"></i>
+                    </h3>
+                    <div id="wrapHistDespesas" style="display: none; margin-top: 15px;">
+                        <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                            <table id="tableDespesas"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -367,9 +377,14 @@
                     </form>
                 </div>
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 10px; text-align: center;">Histórico de Receitas Extras</h3>
-                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
-                        <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Qtd. Pedidos</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                    <h3 style="font-size: 0.9rem; margin-bottom: 0; text-align: center; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 5px;" onclick="toggleHistorico('wrapHistReceitas', 'iconHistReceitas')">
+                        <span>Histórico de Receitas Extras</span>
+                        <i class="fas fa-chevron-down text-accent" id="iconHistReceitas"></i>
+                    </h3>
+                    <div id="wrapHistReceitas" style="display: none; margin-top: 15px;">
+                        <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                            <table id="tableReceitasAvulsas"><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Qtd. Pedidos</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -396,12 +411,17 @@
                     </form>
                 </div>
                 <div class="card" style="max-width: 900px; margin: 0 auto; width: 100%; margin-top:10px;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 10px; text-align: center;">Histórico de Motoboys</h3>
-                    <div style="overflow-x: auto;">
-                        <table id="tableMotoboys">
-                            <thead><tr><th>Data</th><th>Entregador</th><th>Entregas</th><th>Total a Pagar</th><th>Status</th><th>Ações</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                    <h3 style="font-size: 0.9rem; margin-bottom: 0; text-align: center; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 5px;" onclick="toggleHistorico('wrapHistMotoboys', 'iconHistMotoboys')">
+                        <span>Histórico de Motoboys</span>
+                        <i class="fas fa-chevron-down text-accent" id="iconHistMotoboys"></i>
+                    </h3>
+                    <div id="wrapHistMotoboys" style="display: none; margin-top: 15px;">
+                        <div style="overflow-x: auto;">
+                            <table id="tableMotoboys">
+                                <thead><tr><th>Data</th><th>Entregador</th><th>Entregas</th><th>Total a Pagar</th><th>Status</th><th>Ações</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -736,6 +756,18 @@
                 }
             });
             return (Number(p.estoque) || 0) - vendidos;
+        }
+        
+        function toggleHistorico(idConteudo, idIcone) {
+            const conteudo = document.getElementById(idConteudo);
+            const icone = document.getElementById(idIcone);
+            if (conteudo.style.display === 'none') {
+                conteudo.style.display = 'block';
+                icone.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                conteudo.style.display = 'none';
+                icone.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
         }
 
         auth.onAuthStateChanged(user => {
@@ -1232,11 +1264,9 @@
             const totalFatGlobal = totalFatVendas + totalRecAvulsas; 
             const totalRecGlobal = totalRecVendas + totalRecAvulsas; 
             
-            // O CMV continua sendo calculado para os indicadores, mas NÃO entra mais na conta final de saídas
             const cmvTotal = custoInsumos + custoEmbalagens; 
             const opexTotal = totalDesp + gastoMotoboys;
             
-            // CORREÇÃO: O total de saídas agora é estritamente o que você lançou nas Despesas + Motoboys
             const totalSaidas = opexTotal;
             
             const lucroL = totalRecGlobal - totalSaidas; 
@@ -1273,7 +1303,21 @@
             const labelsCanal = Object.keys(dadosPorCanal);
             if(graficosInstancias['barChart']) graficosInstancias['barChart'].destroy(); graficosInstancias['barChart'] = new Chart(document.getElementById('barChart').getContext('2d'), { type: 'bar', data: { labels: labelsCanal, datasets: [ { label: 'Fat. Bruto', data: labelsCanal.map(l => dadosPorCanal[l].fat), backgroundColor: labelsCanal.map(l => coresCanais[l] || '#64748b') }, { label: 'Rec. Líq.', data: labelsCanal.map(l => dadosPorCanal[l].rec), backgroundColor: 'rgba(100, 116, 139, 0.3)' } ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             if(graficosInstancias['diaSemanaChart']) graficosInstancias['diaSemanaChart'].destroy(); graficosInstancias['diaSemanaChart'] = new Chart(document.getElementById('diaSemanaChart').getContext('2d'), { type: 'bar', data: { labels: Object.keys(dadosPorDia).map(d => d.substring(0,3)), datasets: [{ data: Object.values(dadosPorDia), backgroundColor: '#3b82f6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } } });
-            if(graficosInstancias['topProductsChart']) graficosInstancias['topProductsChart'].destroy(); let arrayProd = Object.entries(contagemProdutos).sort((a,b) => b[1] - a[1]).slice(0, 10); graficosInstancias['topProductsChart'] = new Chart(document.getElementById('topProductsChart').getContext('2d'), { type: 'bar', data: { labels: arrayProd.map(p => p[0]), datasets: [{ data: arrayProd.map(p => p[1]), backgroundColor: '#10b981' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } } });
+            
+            if(graficosInstancias['topProductsChart']) graficosInstancias['topProductsChart'].destroy(); 
+            let arrayProd = Object.entries(contagemProdutos).sort((a,b) => b[1] - a[1]).slice(0, 10); 
+            graficosInstancias['topProductsChart'] = new Chart(document.getElementById('topProductsChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: arrayProd.map(p => p[0]), datasets: [{ data: arrayProd.map(p => p[1]), backgroundColor: '#10b981' }] }, 
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: {display: false} },
+                    scales: { y: { ticks: { autoSkip: false } } }
+                } 
+            });
+
             if(graficosInstancias['donutChart']) graficosInstancias['donutChart'].destroy(); graficosInstancias['donutChart'] = new Chart(document.getElementById('donutChart').getContext('2d'), { type: 'doughnut', data: { labels: labelsCanal, datasets: [{ data: labelsCanal.map(l => dadosPorCanal[l].ped), backgroundColor: labelsCanal.map(l => coresCanais[l] || '#64748b'), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right' } } } });
         }
 

@@ -60,10 +60,10 @@
         .login-box .logo-container { height: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; pointer-events: none; }
         .login-box .logo-container img { height: 260px; min-height: 260px; width: auto; max-width: none; }
 
-        .sidebar-logo { height: 55px; overflow: hidden; position: relative; margin-bottom: 20px; pointer-events: none; }
-        .sidebar-logo img { height: 220px; min-height: 220px; width: auto; max-width: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: 0.3s all; }
-        .sidebar.collapsed .sidebar-logo { height: 50px; margin-top: 5px; }
-        .sidebar.collapsed .sidebar-logo img { left: 100%; transform: translate(calc(-100% + 60px), -50%); }
+        /* Ajuste do Logotipo da Barra Lateral (Sidebar) - Tamanho Médio/Ideal */
+        .sidebar-logo { display: flex; justify-content: center; align-items: center; height: 85px; margin-bottom: 20px; transition: 0.3s; pointer-events: none; }
+        .sidebar-logo img { max-height: 75px; max-width: 90%; object-fit: contain; transition: 0.3s all; }
+        .sidebar.collapsed .sidebar-logo img { max-height: 35px; }
 
         .nav-logo-wrapper { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 50px; width: 220px; overflow: hidden; display: flex; justify-content: center; align-items: center; pointer-events: none; }
         .nav-logo-wrapper img { height: 230px; min-height: 230px; width: auto; max-width: none; }
@@ -963,13 +963,14 @@
             const categoria = document.getElementById('novoProdutoCategoria').value; 
             
             if(n) { 
-                const payload = { nome:n, custo:c, estoque:q, fornecedor: fornecedor, categoria: categoria, userId: currentUser.uid };
                 if (editandoIdProduto) {
-                    db.collection('produtos').doc(editandoIdProduto).update(payload);
+                    const payloadUpdate = { nome:n, custo:c, estoque:q, fornecedor: fornecedor, categoria: categoria };
+                    db.collection('produtos').doc(editandoIdProduto).update(payloadUpdate);
                     editandoIdProduto = null;
                     document.getElementById('btnSalvarProduto').innerHTML = '<i class="fas fa-save"></i> Salvar';
                 } else {
-                    db.collection('produtos').add(payload); 
+                    const payloadNovo = { nome:n, custo:c, estoque:q, fornecedor: fornecedor, categoria: categoria, userId: currentUser.uid, dataCriacao: new Date().toISOString() };
+                    db.collection('produtos').add(payloadNovo); 
                 }
                 document.getElementById('novoProdutoNome').value=''; 
                 document.getElementById('novoProdutoCusto').value=''; 
@@ -1006,8 +1007,16 @@
                 const forncText = p.fornecedor ? ` | Forn: ${p.fornecedor}` : ''; 
                 const catText = p.categoria ? ` | Cat: ${p.categoria}` : ''; 
                 const estAtual = getEstoqueAtual(p);
+                
+                let diasText = '';
+                if(p.dataCriacao) {
+                    const diff = new Date() - new Date(p.dataCriacao);
+                    const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    diasText = ` | Dias Estq.${dias}`;
+                }
+
                 ul.innerHTML += `<li style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--panel-border);">
-                    <div><b>${p.nome}</b><br><small>Custo: ${formatarMoeda(p.custo)} | Estoque Inicial: ${p.estoque} un.${catText}${forncText} | <span style="color:var(--accent); font-weight:600;">Estoque Atual: ${estAtual} un.</span></small></div>
+                    <div><b>${p.nome}</b><br><small>Custo: ${formatarMoeda(p.custo)} | Estoque Inicial: ${p.estoque} un.${catText}${forncText} | <span style="color:var(--accent); font-weight:600;">Estoque Atual: ${estAtual} un.${diasText}</span></small></div>
                     <div style="white-space:nowrap;">
                         <button class="btn btn-outline" style="padding: 4px 8px; margin-right: 5px;" onclick="editarProdutoBase('${p.id}')"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-outline" style="color:red; padding: 4px 8px;" onclick="deletarProdutoBase('${p.id}')"><i class="fas fa-trash"></i></button>

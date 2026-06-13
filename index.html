@@ -60,7 +60,6 @@
         .login-box .logo-container { height: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; pointer-events: none; }
         .login-box .logo-container img { height: 260px; min-height: 260px; width: auto; max-width: none; }
 
-        /* Ajuste do Logotipo da Barra Lateral (Sidebar) - Tamanho Médio/Ideal */
         .sidebar-logo { display: flex; justify-content: center; align-items: center; height: 85px; margin-bottom: 20px; transition: 0.3s; pointer-events: none; }
         .sidebar-logo img { max-height: 75px; max-width: 90%; object-fit: contain; transition: 0.3s all; }
         .sidebar.collapsed .sidebar-logo img { max-height: 35px; }
@@ -236,9 +235,9 @@
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Taxa Média <i class="fas fa-chevron-down"></i></h3><div class="value text-vermelho" id="kpiTaxa">0%</div><div class="sub-value">Retenção Plataf.</div><div class="kpi-details" id="detTaxa"></div></div>
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Ticket Médio <i class="fas fa-chevron-down"></i></h3><div class="value text-branco" id="kpiTicket">R$ 0,00</div><div class="sub-value">Por Pedido</div><div class="kpi-details" id="detTicket"></div></div>
                     <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Pedidos <i class="fas fa-chevron-down"></i></h3><div class="value text-branco" id="kpiPedidos">0</div><div class="sub-value">Volume Total</div><div class="kpi-details" id="detPedidos"></div></div>
-                    <div class="card kpi-card"><h3>Despesas Totais</h3><div class="value text-vermelho" id="kpiDespesas">R$ 0,00</div><div class="sub-value">Operacionais</div></div>
-                    <div class="card kpi-card"><h3>Lucro Líquido</h3><div class="value text-verde" id="kpiLucroLiq">R$ 0,00</div><div class="sub-value">Receita - Saídas</div></div>
+                    <div class="card kpi-card" onclick="this.classList.toggle('expanded')"><h3>Lucro Líq. <i class="fas fa-chevron-down"></i></h3><div class="value text-verde" id="kpiLucroLiq">R$ 0,00</div><div class="sub-value">Receita - Saídas</div><div class="kpi-details" id="detLucroLiq"></div></div>
                     <div class="card kpi-card"><h3>Margem Líq.</h3><div class="value text-branco" id="kpiMargem">0%</div><div class="sub-value">Sobre Faturam.</div></div>
+                    <div class="card kpi-card"><h3>Despesas Totais</h3><div class="value text-vermelho" id="kpiDespesas">R$ 0,00</div><div class="sub-value">Operacionais</div></div>
                     <div class="card kpi-card"><h3>Estoque Atual</h3><div class="value text-branco" id="kpiEstoque">R$ 0,00</div><div class="sub-value">Valor de Custo</div></div>
                 </div>
 
@@ -266,7 +265,8 @@
                                     <option value="iFood">iFood</option><option value="Keeta">Keeta</option><option value="99 Foods">99 Foods</option><option value="WhatsApp">WhatsApp</option><option value="Site">Site</option><option value="Balcão">Balcão</option><option value="Instagram">Instagram</option><option value="Outras Receitas">Outras Receitas</option>
                                 </select>
                             </div>
-                            <div class="form-group"><label>Qtd. Itens no Pedido</label><input type="number" id="qtdItensVenda" required min="1"></div>
+                            <div class="form-group"><label>Nº do Pedido</label><input type="text" id="numeroPedidoVenda" placeholder="Opcional"></div>
+                            <div class="form-group"><label>Qtd. Itens</label><input type="number" id="qtdItensVenda" required min="1"></div>
                             <div class="form-group"><label>Faturamento (R$)</label><input type="number" id="faturamentoVenda" step="0.01" required></div>
                             <div class="form-group"><label>Líquido (R$)</label><input type="number" id="liquidoVenda" step="0.01" required></div>
                         </div>
@@ -301,7 +301,7 @@
                     <div id="wrapHistVendas" style="display: none; margin-top: 15px;">
                         <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
                             <table id="tableVendasGeral">
-                                <thead><tr><th>Data</th><th>Canal</th><th>Faturamento</th><th>Líquido</th><th>Ações</th></tr></thead>
+                                <thead><tr><th>Data</th><th>Nº Pedido</th><th>Canal</th><th>Faturamento</th><th>Líquido</th><th>Ações</th></tr></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -745,6 +745,19 @@
         document.getElementById('dreFiltroMes').value = String(dHoje.getMonth() + 1).padStart(2, '0');
         document.getElementById('dreFiltroAno').value = String(dHoje.getFullYear());
 
+        const primeiroDia = new Date(dHoje.getFullYear(), dHoje.getMonth(), 1);
+        const ultimoDia = new Date(dHoje.getFullYear(), dHoje.getMonth() + 1, 0);
+        
+        const formataDataInput = (data) => {
+            const ano = data.getFullYear();
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const dia = String(data.getDate()).padStart(2, '0');
+            return `${ano}-${mes}-${dia}`;
+        };
+        
+        document.getElementById('filterStart').value = formataDataInput(primeiroDia);
+        document.getElementById('filterEnd').value = formataDataInput(ultimoDia);
+
         function formatarMoeda(v) { return `R$ ${(Number(v) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}`; }
         function calcPerc(valor, base) { if(base === 0) return "0,0%"; return ((Math.abs(valor) / base) * 100).toFixed(1) + "%"; }
 
@@ -855,6 +868,7 @@
                 data: document.getElementById('dataVenda').value, 
                 diaSemana: document.getElementById('diaSemanaVenda').value, 
                 canal: document.getElementById('canalVenda').value, 
+                numeroPedido: document.getElementById('numeroPedidoVenda').value.trim(),
                 qtdPedidos: 1, 
                 qtdItens: parseInt(document.getElementById('qtdItensVenda').value)||0, 
                 faturamento: parseFloat(document.getElementById('faturamentoVenda').value)||0, 
@@ -866,12 +880,12 @@
             document.getElementById('formVendas').reset(); document.getElementById('dataVenda').valueAsDate = new Date(); produtosTempVenda = []; renderizarChipsVenda(); 
         });
 
-        function renderizarTabelaVendas() { const tbody = document.querySelector('#tableVendasGeral tbody'); if(!tbody) return; tbody.innerHTML = ''; const ord = [...bdVendas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0)); ord.forEach(v => { const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : ''; tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><span style="color:${coresCanais[v.canal] || '#64748b'}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td><td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarLancamentoVenda('${v.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarVenda('${v.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }
+        function renderizarTabelaVendas() { const tbody = document.querySelector('#tableVendasGeral tbody'); if(!tbody) return; tbody.innerHTML = ''; const ord = [...bdVendas].sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0)); ord.forEach(v => { const dataFormatada = v.data ? v.data.split('-').reverse().join('/') : ''; tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><b>${v.numeroPedido || '-'}</b></td><td><span style="color:${coresCanais[v.canal] || '#64748b'}">●</span> ${v.canal}</td><td>${formatarMoeda(v.faturamento)}</td><td style="color:#10b981;">${formatarMoeda(v.receitaLiquida)}</td><td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarLancamentoVenda('${v.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarVenda('${v.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }
         function deletarVenda(id) { if(confirm("Excluir venda?")) db.collection('vendas').doc(id).delete(); }
         function editarLancamentoVenda(id) { 
             const item = bdVendas.find(x => x.id === id); if(!item) return; 
             document.getElementById('dataVenda').value = item.data; document.getElementById('diaSemanaVenda').value = item.diaSemana; document.getElementById('canalVenda').value = item.canal; 
-            document.getElementById('qtdItensVenda').value = item.qtdItens; document.getElementById('faturamentoVenda').value = item.faturamento; document.getElementById('liquidoVenda').value = item.receitaLiquida; 
+            document.getElementById('numeroPedidoVenda').value = item.numeroPedido || ''; document.getElementById('qtdItensVenda').value = item.qtdItens; document.getElementById('faturamentoVenda').value = item.faturamento; document.getElementById('liquidoVenda').value = item.receitaLiquida; 
             document.getElementById('vendaEmbalagemSelect').value = item.embalagemId || ''; document.getElementById('vendaEmbalagemQtd').value = item.embalagemQtd || 0; produtosTempVenda = [...(item.produtos || [])]; renderizarChipsVenda(); editandoIdVenda = id; document.getElementById('btnSalvarVenda').innerHTML = '<i class="fas fa-edit"></i> Atualizar Venda'; window.scrollTo(0,0); 
         }
 
@@ -1243,7 +1257,7 @@
             let rFiltradas = bdReceitasAvulsas.filter(r => (!fStart || r.data >= fStart) && (!fEnd || r.data <= fEnd));
             let mFiltrados = bdMotoboys.filter(m => (!fStart || m.data >= fStart) && (!fEnd || m.data <= fEnd));
             
-            let totalFatVendas = 0, totalRecVendas = 0, totalPed = 0, totalDesp = 0, totalRecAvulsas = 0;
+            let totalFatVendas = 0, totalRecVendas = 0, totalPed = 0, totalDesp = 0, totalRecAvulsas = 0, totalItensVendidos = 0;
             let custoInsumos = 0, custoEmbalagens = 0, gastoMotoboys = 0;
             
             let dadosPorCanal = { 'iFood': {fat:0, rec:0, ped:0}, 'Keeta': {fat:0, rec:0, ped:0}, '99 Foods': {fat:0, rec:0, ped:0}, 'WhatsApp': {fat:0, rec:0, ped:0}, 'Site': {fat:0, rec:0, ped:0}, 'Balcão': {fat:0, rec:0, ped:0}, 'Instagram': {fat:0, rec:0, ped:0}, 'Outras Receitas': {fat:0, rec:0, ped:0} };
@@ -1252,6 +1266,7 @@
 
             vFiltradas.forEach(v => {
                 totalFatVendas += v.faturamento || 0; totalRecVendas += v.receitaLiquida || 0; totalPed += v.qtdPedidos || 0;
+                totalItensVendidos += parseInt(v.qtdItens) || 0;
                 custoEmbalagens += v.embalagemCustoTotal || 0;
                 
                 if(v.produtos) {
@@ -1308,6 +1323,11 @@
             if(totalRecAvulsas > 0) { htmlFat += `<div class="detail-row" style="border-top:1px dashed var(--panel-border); margin-top:4px; padding-top:4px;"><span style="color:var(--accent)">●</span> Extras: <b>${formatarMoeda(totalRecAvulsas)}</b></div>`; htmlRec += `<div class="detail-row" style="border-top:1px dashed var(--panel-border); margin-top:4px; padding-top:4px;"><span style="color:var(--accent)">●</span> Extras: <b>${formatarMoeda(totalRecAvulsas)}</b></div>`; }
             
             const detFat = document.getElementById('detFaturamento'); if(detFat) detFat.innerHTML = htmlFat; const detRec = document.getElementById('detReceita'); if(detRec) detRec.innerHTML = htmlRec; const detTk = document.getElementById('detTicket'); if(detTk) detTk.innerHTML = htmlTicket; const detTx = document.getElementById('detTaxa'); if(detTx) detTx.innerHTML = htmlTaxa; const detPed = document.getElementById('detPedidos'); if(detPed) detPed.innerHTML = htmlPedidos;
+
+            const detLucro = document.getElementById('detLucroLiq');
+            if (detLucro) {
+                detLucro.innerHTML = `<div class="detail-row"><span style="color:var(--text-muted)">Itens Vendidos:</span> <b>${totalItensVendidos} un.</b></div>`;
+            }
 
             const labelsCanal = Object.keys(dadosPorCanal);
             if(graficosInstancias['barChart']) graficosInstancias['barChart'].destroy(); graficosInstancias['barChart'] = new Chart(document.getElementById('barChart').getContext('2d'), { type: 'bar', data: { labels: labelsCanal, datasets: [ { label: 'Fat. Bruto', data: labelsCanal.map(l => dadosPorCanal[l].fat), backgroundColor: labelsCanal.map(l => coresCanais[l] || '#64748b') }, { label: 'Rec. Líq.', data: labelsCanal.map(l => dadosPorCanal[l].rec), backgroundColor: 'rgba(100, 116, 139, 0.3)' } ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });

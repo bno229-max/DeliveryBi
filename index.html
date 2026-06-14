@@ -60,9 +60,10 @@
         .login-box .logo-container { height: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; pointer-events: none; }
         .login-box .logo-container img { height: 260px; min-height: 260px; width: auto; max-width: none; }
 
-        .sidebar-logo { display: flex; justify-content: center; align-items: center; height: 85px; margin-bottom: 20px; transition: 0.3s; pointer-events: none; }
-        .sidebar-logo img { max-height: 75px; max-width: 90%; object-fit: contain; transition: 0.3s all; }
-        .sidebar.collapsed .sidebar-logo img { max-height: 35px; }
+        .sidebar-logo { height: 55px; overflow: hidden; position: relative; margin-bottom: 20px; pointer-events: none; }
+        .sidebar-logo img { height: 220px; min-height: 220px; width: auto; max-width: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: 0.3s all; }
+        .sidebar.collapsed .sidebar-logo { height: 50px; margin-top: 5px; }
+        .sidebar.collapsed .sidebar-logo img { left: 100%; transform: translate(calc(-100% + 60px), -50%); }
 
         .nav-logo-wrapper { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 50px; width: 220px; overflow: hidden; display: flex; justify-content: center; align-items: center; pointer-events: none; }
         .nav-logo-wrapper img { height: 230px; min-height: 230px; width: auto; max-width: none; }
@@ -77,6 +78,7 @@
         #sidebar-footer { margin-top: auto; padding: 15px 5px; text-align: center; border-top: 1px solid var(--panel-border); transition: opacity 0.2s; flex-shrink: 0; }
         .sidebar.collapsed #sidebar-footer { opacity: 0; pointer-events: none; padding: 0; height: 0; overflow: hidden; border: none; }
 
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
         .form-group { margin-bottom: 12px; text-align: left;}
         .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
@@ -114,9 +116,9 @@
         .text-branco { color: #ffffff; }
         body:not(.dark-mode) .text-branco { color: #1e293b; }
 
-        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .charts-grid .card { display: flex; flex-direction: column; padding: 10px; }
-        .chart-container { position: relative; height: 145px; width: 100%; margin-top: 5px; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .charts-grid .card { display: flex; flex-direction: column; padding: 10px; overflow: hidden; width: 100%; }
+        .chart-container { position: relative; height: 180px; width: 100%; margin-top: 5px; overflow: hidden; }
 
         @media (max-width: 1024px) {
             .kpi-grid { grid-template-columns: repeat(3, 1fr); }
@@ -168,6 +170,10 @@
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;"><i class="fas fa-sign-in-alt"></i> Acessar Painel</button>
                 <button type="button" class="btn btn-outline" onclick="criarConta()" style="width: 100%; margin-top: 10px;">Criar nova conta</button>
+                
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px; border-top: 1px dashed var(--panel-border); padding-top: 10px; line-height: 1.4;">
+                    <i class="fas fa-info-circle text-accent"></i> <b>Primeiro acesso?</b> Digite o e-mail e a senha desejados nos campos acima e clique em "Criar nova conta".
+                </p>
             </form>
         </div>
     </div>
@@ -244,7 +250,7 @@
                 <div class="charts-grid">
                     <div class="card"><h3>Faturamento vs Líquido</h3><div class="chart-container"><canvas id="barChart"></canvas></div></div>
                     <div class="card"><h3>Vendas por Dia da Semana</h3><div class="chart-container"><canvas id="diaSemanaChart"></canvas></div></div>
-                    <div class="card"><h3>Top 10 Itens Mais Vendidos</h3><div class="chart-container" style="height: 250px;"><canvas id="topProductsChart"></canvas></div></div>
+                    <div class="card"><h3>Top 10 Itens Mais Vendidos</h3><div class="chart-container"><canvas id="topProductsChart"></canvas></div></div>
                     <div class="card"><h3>Pedidos por Canal</h3><div class="chart-container"><canvas id="donutChart"></canvas></div></div>
                 </div>
             </div>
@@ -819,7 +825,21 @@
         }
 
         document.getElementById('formLogin').addEventListener('submit', (e) => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('authEmail').value, document.getElementById('authPassword').value).catch(err => { document.getElementById('loginError').innerText = err.message; document.getElementById('loginError').style.display = 'block'; }); });
-        function criarConta() { const email = document.getElementById('authEmail').value; const pass = document.getElementById('authPassword').value; if(!email || !pass) return alert("Preencha as credenciais."); auth.createUserWithEmailAndPassword(email, pass).then(cred => { alert("Conta SaaS criada e logada com sucesso!"); }).catch(err => { document.getElementById('loginError').innerText = err.message; document.getElementById('loginError').style.display = 'block'; }); }
+        
+        function criarConta() { 
+            const email = document.getElementById('authEmail').value; 
+            const pass = document.getElementById('authPassword').value; 
+            if(!email || !pass) {
+                return alert("Para cadastrar e acessar pela primeira vez, digite seu e-mail e uma senha nos campos do formulário e clique em 'Criar nova conta'.");
+            } 
+            auth.createUserWithEmailAndPassword(email, pass).then(cred => { 
+                alert("Conta SaaS criada e logada com sucesso!"); 
+            }).catch(err => { 
+                document.getElementById('loginError').innerText = err.message; 
+                document.getElementById('loginError').style.display = 'block'; 
+            }); 
+        }
+        
         function recuperarSenha() { const email = document.getElementById('authEmail').value; if (email) auth.sendPasswordResetEmail(email).then(() => alert("E-mail enviado!")); else alert("Digite seu e-mail no campo correspondente.");}
         function fazerLogout() { auth.signOut(); }
 
@@ -916,16 +936,16 @@
 
         document.getElementById('formFornecedor').addEventListener('submit', function(e) {
             e.preventDefault();
-            const f = { nome: document.getElementById('nomeFornecedor').value.trim(), cnpj: document.getElementById('cnpjFornecedor').value.trim(), vendedor: document.getElementById('vendedorFornecedor').value.trim(), telefone: document.getElementById('telFornecedor').value.trim(), userId: currentUser.uid };
+            const f = { nome: document.getElementById('nomeFornecedor').value.trim(), cnpj: document.getElementById('cnpjFornecedor').value.trim(), vendedor: document.getElementById('vendedorFornecedor').value.trim(), telephone: document.getElementById('telFornecedor').value.trim(), userId: currentUser.uid };
             if(editandoIdFornecedor) { db.collection('fornecedores').doc(editandoIdFornecedor).update(f); editandoIdFornecedor = null; document.getElementById('btnSalvarFornecedor').innerHTML = '<i class="fas fa-save"></i> Salvar Fornecedor'; } else { db.collection('fornecedores').add(f); } document.getElementById('formFornecedor').reset();
         });
         function atualizarSelectFornecedores() {
             const select = document.getElementById('novoProdutoFornecedor'); if(!select) return; select.innerHTML = '<option value="">-- Fornecedor (Opcional) --</option>';
             bdFornecedores.forEach(f => { select.innerHTML += `<option value="${f.nome}">${f.nome}</option>`; });
         }
-        function renderizarTabelaFornecedores() { const tbody = document.querySelector('#tableFornecedores tbody'); if(!tbody) return; tbody.innerHTML = ''; bdFornecedores.forEach(f => { tbody.innerHTML += `<tr><td><b>${f.nome}</b></td><td>${f.cnpj || '-'}</td><td>${f.vendedor || '-'}</td><td>${f.telefone || '-'}</td><td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarFornecedor('${f.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarFornecedor('${f.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }
+        function renderizarTabelaFornecedores() { const tbody = document.querySelector('#tableFornecedores tbody'); if(!tbody) return; tbody.innerHTML = ''; bdFornecedores.forEach(f => { tbody.innerHTML += `<tr><td><b>${f.nome}</b></td><td>${f.cnpj || '-'}</td><td>${f.vendedor || '-'}</td><td>${f.telephone || '-'}</td><td><button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem;" onclick="editarFornecedor('${f.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-outline" style="padding:4px 6px; font-size:0.7rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarFornecedor('${f.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }
         function deletarFornecedor(id) { if(confirm("Deseja apagar este fornecedor?")) db.collection('fornecedores').doc(id).delete(); }
-        function editarFornecedor(id) { const f = bdFornecedores.find(x => x.id === id); if(!f) return; document.getElementById('nomeFornecedor').value = f.nome; document.getElementById('cnpjFornecedor').value = f.cnpj || ''; document.getElementById('vendedorFornecedor').value = f.vendedor || ''; document.getElementById('telFornecedor').value = f.telefone || ''; editandoIdFornecedor = id; document.getElementById('btnSalvarFornecedor').innerHTML = '<i class="fas fa-edit"></i> Atualizar Fornecedor'; window.scrollTo(0,0); }
+        function editarFornecedor(id) { const f = bdFornecedores.find(x => x.id === id); if(!f) return; document.getElementById('nomeFornecedor').value = f.nome; document.getElementById('cnpjFornecedor').value = f.cnpj || ''; document.getElementById('vendedorFornecedor').value = f.vendedor || ''; document.getElementById('telFornecedor').value = f.telephone || ''; editandoIdFornecedor = id; document.getElementById('btnSalvarFornecedor').innerHTML = '<i class="fas fa-edit"></i> Atualizar Fornecedor'; window.scrollTo(0,0); }
 
         // ==============================
         // MÓDULO CATEGORIAS
@@ -1062,17 +1082,17 @@
             
             document.querySelectorAll('.input-inventario').forEach(input => { 
                 const id = input.getAttribute('data-id'); const nome = input.getAttribute('data-nome'); 
-                const custo = parseFloat(input.getAttribute('data-custo'))||0; const atual = parseInt(input.getAttribute('data-atual'))||0; 
+                const custo = parseFloat(input.getAttribute('data-custo'))||0; const mtual = parseInt(input.getAttribute('data-atual'))||0; 
                 const vendidosHistorico = parseInt(input.getAttribute('data-vendidos'))||0;
                 const encontrado = parseInt(input.value)||0; 
                 
-                const divQtd = encontrado - atual; 
+                const divQtd = encontrado - mtual; 
                 const divR = divQtd * custo; 
                 divergenciaTotalR += divR; 
                 
-                itensAuditados.push({ id, nome, atual, encontrado, divQtd, divR }); 
+                itensAuditados.push({ id, nome, mtual, encontrado, divQtd, divR }); 
                 
-                if (atual !== encontrado) { 
+                if (mtual !== encontrado) { 
                     const novoEstoqueInicial = encontrado + vendidosHistorico;
                     promises.push(db.collection('produtos').doc(id).update({ estoque: novoEstoqueInicial })); 
                 } 
@@ -1085,9 +1105,9 @@
 
         function renderizarHistoricoInventarios() { const tbody = document.querySelector('#tableHistoricoInventario tbody'); tbody.innerHTML = ''; const ord = [...bdInventarios].sort((a,b) => b.dataHora.localeCompare(a.dataHora)); ord.forEach(inv => { const cor = inv.divergenciaTotalR < 0 ? '#ef4444' : (inv.divergenciaTotalR > 0 ? '#10b981' : 'var(--text-muted)'); const sinal = inv.divergenciaTotalR > 0 ? '+' : ''; tbody.innerHTML += `<tr><td>${inv.dataHora}</td><td style="color: ${cor}; font-weight: bold;">${sinal} ${formatarMoeda(inv.divergenciaTotalR)}</td><td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='abrirModalInventario(${JSON.stringify(inv)})'><i class="fas fa-eye"></i> Detalhes</button></td><td><button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="gerarPDFInventario('${inv.id}')"><i class="fas fa-file-pdf"></i></button> <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem; color:#ef4444; border-color:#fca5a5;" onclick="deletarInventario('${inv.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }
         function deletarInventario(id) { if(confirm("Deseja mesmo excluir de forma permanente este histórico de inventário?")) db.collection('inventarios').doc(id).delete(); }
-        function abrirModalInventario(invStr) { const inv = typeof invStr === 'string' ? JSON.parse(invStr) : invStr; let html = `<table style="width: 100%;"><thead><tr><th>Produto</th><th>Sistema</th><th>Físico</th><th>Div (R$)</th></tr></thead><tbody>`; inv.itens.forEach(i => { const cor = i.divR < 0 ? '#ef4444' : (i.divR > 0 ? '#10b981' : 'var(--text-main)'); html += `<tr><td>${i.nome}</td><td>${i.atual}</td><td>${i.encontrado}</td><td style="color: ${cor};">${i.divR > 0 ? '+' : ''} ${formatarMoeda(i.divR)}</td></tr>`; }); html += `</tbody></table>`; document.getElementById('conteudoModalInventario').innerHTML = html; document.getElementById('modalInventario').classList.add('active'); }
+        function abrirModalInventario(invStr) { const inv = typeof invStr === 'string' ? JSON.parse(invStr) : invStr; let html = `<table style="width: 100%;"><thead><tr><th>Produto</th><th>Sistema</th><th>Físico</th><th>Div (R$)</th></tr></thead><tbody>`; inv.itens.forEach(i => { const cor = i.divR < 0 ? '#ef4444' : (i.divR > 0 ? '#10b981' : 'var(--text-main)'); html += `<tr><td>${i.nome}</td><td>${i.mtual}</td><td>${i.encontrado}</td><td style="color: ${cor};">${i.divR > 0 ? '+' : ''} ${formatarMoeda(i.divR)}</td></tr>`; }); html += `</tbody></table>`; document.getElementById('conteudoModalInventario').innerHTML = html; document.getElementById('modalInventario').classList.add('active'); }
         function fecharModalInventario() { document.getElementById('modalInventario').classList.remove('active'); }
-        function gerarPDFInventario(id) { const inv = bdInventarios.find(x => x.id === id); if(!inv) return; const div = document.createElement('div'); div.style.cssText = "padding:20px; font-family:sans-serif; color:#000; background:#fff; width:100%; font-size:12px;"; let htmlTable = `<table style="width:100%; border-collapse:collapse; text-align:left; margin-top:20px; border:1px solid #000;"><thead><tr style="background:#eee; border-bottom:1px solid #000;"><th style="padding:6px; border-right:1px solid #000;">Produto</th><th style="padding:6px; border-right:1px solid #000;">Estoque Sistema</th><th style="padding:6px; border-right:1px solid #000;">Qtd. Encontrada</th><th style="padding:6px; border-right:1px solid #000;">Div. (Qtd)</th><th style="padding:6px;">Div. (R$)</th></tr></thead><tbody>`; inv.itens.forEach(i => { htmlTable += `<tr style="border-bottom:1px solid #ccc;"><td style="padding:6px; border-right:1px solid #000;">${i.nome}</td><td style="padding:6px; border-right:1px solid #000; text-align:center;">${i.atual}</td><td style="padding:6px; border-right:1px solid #000; text-align:center;">${i.encontrado}</td><td style="padding:6px; border-right:1px solid #000; text-align:center;">${i.divQtd > 0 ? '+'+i.divQtd : i.divQtd}</td><td style="padding:6px;">${formatarMoeda(i.divR)}</td></tr>`; }); htmlTable += `</tbody></table>`; div.innerHTML = `<div style="text-align:center;"><h2 style="margin-bottom:5px;">RELATÓRIO DE INVENTÁRIO (AUDITORIA)</h2><p style="margin:0;"><b>${perfilDados.nome || 'MetricsOne'}</b></p></div><hr style="margin:15px 0;"><p><b>Data e Hora da Auditoria:</b> ${inv.dataHora}</p><p><b>Responsável pela Contagem:</b> ${inv.responsavel || 'Não informado'}</p>${htmlTable}<h3 style="text-align:right; margin-top:20px;">Divergência Total Acumulada: ${formatarMoeda(inv.divergenciaTotalR)}</h3><div style="margin-top:60px; text-align:center;"><div style="width:50%; margin:0 auto; border-top:1px solid #000; padding-top:10px;"><b>${inv.responsavel || 'Responsável'}</b><br>Assinatura</div></div>`; html2pdf().set({ margin:10, filename: `Inventario_${inv.dataHora.replace(/[\/\s:]/g,'_')}.pdf`, html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'} }).from(div).save(); }
+        function gerarPDFInventario(id) { const inv = bdInventarios.find(x => x.id === id); if(!inv) return; const div = document.createElement('div'); div.style.cssText = "padding:20px; font-family:sans-serif; color:#000; background:#fff; width:100%; font-size:12px;"; let htmlTable = `<table style="width:100%; border-collapse:collapse; text-align:left; margin-top:20px; border:1px solid #000;"><thead><tr style="background:#eee; border-bottom:1px solid #000;"><th style="padding:6px; border-right:1px solid #000;">Produto</th><th style="padding:6px; border-right:1px solid #000;">Estoque Sistema</th><th style="padding:6px; border-right:1px solid #000;">Qtd. Encontrada</th><th style="padding:6px; border-right:1px solid #000;">Div. (Qtd)</th><th style="padding:6px;">Div. (R$)</th></tr></thead><tbody>`; inv.itens.forEach(i => { htmlTable += `<tr style="border-bottom:1px solid #ccc;"><td style="padding:6px; border-right:1px solid #000;">${i.nome}</td><td style="padding:6px; border-right:1px solid #000; text-align:center;">${i.mtual}</td><td style="padding:6px; border-right:1px solid #000; text-align:center;">${i.encontrado}</td><td style="padding:6px; border-right:1px solid #000; text-align:center;">${i.divQtd > 0 ? '+'+i.divQtd : i.divQtd}</td><td style="padding:6px;">${formatarMoeda(i.divR)}</td></tr>`; }); htmlTable += `</tbody></table>`; div.innerHTML = `<div style="text-align:center;"><h2 style="margin-bottom:5px;">RELATÓRIO DE INVENTÁRIO (AUDITORIA)</h2><p style="margin:0;"><b>${perfilDados.nome || 'MetricsOne'}</b></p></div><hr style="margin:15px 0;"><p><b>Data e Hora da Auditoria:</b> ${inv.dataHora}</p><p><b>Responsável pela Contagem:</b> ${inv.responsavel || 'Não informado'}</p>${htmlTable}<h3 style="text-align:right; margin-top:20px;">Divergência Total Acumulada: ${formatarMoeda(inv.divergenciaTotalR)}</h3><div style="margin-top:60px; text-align:center;"><div style="width:50%; margin:0 auto; border-top:1px solid #000; padding-top:10px;"><b>${inv.responsavel || 'Responsável'}</b><br>Assinatura</div></div>`; html2pdf().set({ margin:10, filename: `Inventario_${inv.dataHora.replace(/[\/\s:]/g,'_')}.pdf`, html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'} }).from(div).save(); }
 
         function addInsumoFicha() { const n = document.getElementById('nomeInsumoFicha').value.trim(); const c = parseFloat(document.getElementById('custoInsumoFicha').value) || 0; if(n && c > 0) { insumosTempFicha.push({ nome: n, custo: c }); document.getElementById('nomeInsumoFicha').value = ''; document.getElementById('custoInsumoFicha').value = ''; renderizarInsumosFicha(); } }
         function remInsumoFicha(i) { insumosTempFicha.splice(i, 1); renderizarInsumosFicha(); }
@@ -1376,8 +1396,8 @@
             } catch(e) { console.error("Erro ao carregar painel admin: ", e); }
         }
 
-        function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status atualizado!'); carregarListaUsuariosAdmin(); }); }
-        function alternarPagamentoConta(uid, status) { db.collection('usuarios').doc(uid).update({ pagamentoEmDia: status }).then(() => { alert('Pagamento atualizado!'); carregarListaUsuariosAdmin(); }); }
+        function alterarStatusConta(uid, novoStatus) { db.collection('usuarios').doc(uid).update({ statusAcesso: novoStatus }).then(() => { alert('Status updated!'); carregarListaUsuariosAdmin(); }); }
+        function alternarPagamentoConta(uid, status) { db.collection('usuarios').doc(uid).update({ pagamentoEmDia: status }).then(() => { alert('Payment updated!'); carregarListaUsuariosAdmin(); }); }
 
         async function exportarUsuariosExcel() {
             if(currentUser.email !== MEU_EMAIL_ADMIN) return;
